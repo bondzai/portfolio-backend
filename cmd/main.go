@@ -34,5 +34,9 @@ func main() {
 		return c.JSON(data.Projects)
 	})
 
+	app.Get("/wakatime", func(c *fiber.Ctx) error {
+		return c.JSON(data.Wakatime)
+	})
+
 	app.Listen(":10000")
 }
