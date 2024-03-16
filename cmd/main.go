@@ -9,11 +9,15 @@ func main() {
 	app := fiber.New()
 
 	app.Use(func(c *fiber.Ctx) error {
-		c.Set("Access-Control-Allow-Origin", "*")
-		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		if c.Method() == "OPTIONS" {
-			return c.SendStatus(fiber.StatusNoContent)
+		allowedOrigin := "https://thejb.onrender.com"
+		origin := c.Get("Origin")
+		if origin == allowedOrigin {
+			c.Set("Access-Control-Allow-Origin", allowedOrigin)
+			c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			if c.Method() == "OPTIONS" {
+				return c.SendStatus(fiber.StatusNoContent)
+			}
 		}
 		return c.Next()
 	})
