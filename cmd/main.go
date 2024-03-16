@@ -20,5 +20,9 @@ func main() {
 		return c.JSON(data.Certifications)
 	})
 
+	app.Get("/projects", func(c *fiber.Ctx) error {
+		return c.JSON(data.Projects)
+	})
+
 	app.Listen(":10000")
 }
