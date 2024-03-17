@@ -6,6 +6,7 @@ import (
 
 	"github.com/bondzai/test/data"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func APIKeyAuthMiddleware(apiKey string) fiber.Handler {
@@ -45,13 +46,12 @@ func AuthTokenMiddleware(allowedToken string) fiber.Handler {
 }
 
 func main() {
-	apiKey := "your-api-key"
-	apiToken := "your-api-token"
-
 	app := fiber.New()
 
-	app.Use(APIKeyAuthMiddleware(apiKey))
-	app.Use(AuthTokenMiddleware(apiToken))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "https://thejb.onrender.com",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
