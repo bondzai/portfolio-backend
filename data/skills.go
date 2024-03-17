@@ -29,7 +29,7 @@ var Skills = []Skill{
 	{
 		ID:        3,
 		ImageURL:  "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg",
-		IsShowing: true,
+		IsShowing: false,
 		Name:      "TypeScript",
 		Topic:     "language",
 		URL:       "https://www.typescriptlang.org/",
@@ -93,7 +93,7 @@ var Skills = []Skill{
 	{
 		ID:        11,
 		ImageURL:  "https://www.vectorlogo.zone/logos/nestjs/nestjs-icon.svg",
-		IsShowing: true,
+		IsShowing: false,
 		Name:      "Nest",
 		Topic:     "backend",
 		URL:       "https://nestjs.com/",
@@ -109,7 +109,7 @@ var Skills = []Skill{
 	{
 		ID:        13,
 		ImageURL:  "https://cdn.worldvectorlogo.com/logos/fastapi.svg",
-		IsShowing: true,
+		IsShowing: false,
 		Name:      "Fast",
 		Topic:     "backend",
 		URL:       "https://fastapi.tiangolo.com/",
@@ -165,7 +165,7 @@ var Skills = []Skill{
 	{
 		ID:        20,
 		ImageURL:  "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
-		IsShowing: true,
+		IsShowing: false,
 		Name:      "Firebase",
 		Topic:     "database",
 		URL:       "https://firebase.google.com/",
