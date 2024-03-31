@@ -10,8 +10,9 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "https://thejb.onrender.com",
-		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowOrigins:     "https://thejb.onrender.com, http://localhost:5173",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: false,
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
