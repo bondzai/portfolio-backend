@@ -3,30 +3,59 @@ package data
 import (
 	"encoding/base64"
 	"encoding/json"
-	"log"
-	"os"
+	"fmt"
 
-	"github.com/bondzai/goez/toolbox"
-	"github.com/joho/godotenv"
 	"github.com/valyala/fasthttp"
 )
 
-var devMode = true
 var apiUrl = GetEnv("GO_WAKATIME_URL", "https://wakatime.com/api/v1/users/current/stats/all_time")
 var apiKey = GetEnv("GO_WAKATIME_API_KEY", "")
 
-func GetEnv(key, fallback string) string {
-	if devMode {
-		if err := godotenv.Load(); err != nil {
-			log.Printf("Error loading .env file: %s\n", err)
+func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
+	cleanedData := make([]map[string]interface{}, newLastIndex+1)
+
+	var totalPercent, totalHours, totalMinutes float64
+
+	for i, item := range data {
+		itemMap := item.(map[string]interface{})
+		itemName := itemMap["name"].(string)
+		itemPercent := itemMap["percent"].(float64)
+		itemHours := itemMap["hours"].(float64)
+		itemMinutes := itemMap["minutes"].(float64)
+		itemText := itemMap["text"].(string)
+
+		cleanedItem := map[string]interface{}{
+			"name":    itemName,
+			"percent": itemPercent,
+			"hours":   itemHours,
+			"minutes": itemMinutes,
+			"text":    itemText,
 		}
+
+		if i < newLastIndex {
+			totalPercent += itemPercent
+			totalHours += itemHours
+			totalMinutes += itemMinutes
+		} else {
+			otherPercent := 100.0 - totalPercent
+			otherHours := totalHours * otherPercent / 100.0
+			otherMinutes := totalMinutes * otherPercent / 100.0
+			cleanedItem = map[string]interface{}{
+				"name":    "Other",
+				"percent": fmt.Sprintf("%.2f", otherPercent),
+				"hours":   otherHours,
+				"minutes": otherMinutes,
+				"text":    fmt.Sprintf("%d hrs %d mins", int(otherHours), int(otherMinutes)),
+			}
+		}
+
+		if i > newLastIndex {
+			continue
+		}
+		cleanedData[i] = cleanedItem
 	}
 
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
-	return value
+	return cleanedData
 }
 
 func FetchDataFromAPI() (map[string]interface{}, error) {
@@ -48,13 +77,12 @@ func FetchDataFromAPI() (map[string]interface{}, error) {
 		"human_readable_range":                          response["data"].(map[string]interface{})["human_readable_range"],
 		"days_including_holidays":                       response["data"].(map[string]interface{})["days_including_holidays"],
 		"human_readable_total_including_other_language": response["data"].(map[string]interface{})["human_readable_total_including_other_language"],
-		"operating_systems":                             response["data"].(map[string]interface{})["operating_systems"],
-		"editors":                                       response["data"].(map[string]interface{})["editors"],
-		"languages":                                     response["data"].(map[string]interface{})["languages"],
+		"operating_systems":                             cleanData(response["data"].(map[string]interface{})["operating_systems"].([]interface{}), 2),
+		"editors":                                       cleanData(response["data"].(map[string]interface{})["editors"].([]interface{}), 2),
+		"languages":                                     cleanData(response["data"].(map[string]interface{})["languages"].([]interface{}), 3),
 		"best_day":                                      response["data"].(map[string]interface{})["best_day"],
 	}
 
-	toolbox.PPrint(wakatimeData)
 	return wakatimeData, nil
 }
 
