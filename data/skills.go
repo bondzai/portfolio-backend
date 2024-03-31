@@ -299,22 +299,6 @@ var Skills = []Skill{
 		URL:       "https://www.aveva.com/en/solutions/operations/operations-control-hmi/",
 	},
 	{
-		ID:        47,
-		ImageURL:  "https://raw.githubusercontent.com/simple-icons/simple-icons/9bcc47c4792f84f91b59c3a4630600f4a54a31e9/icons/proxmox.svg",
-		IsShowing: true,
-		Name:      "Proxmox",
-		Topic:     "tools",
-		URL:       "https://www.proxmox.com/en/",
-	},
-	{
-		ID:        48,
-		ImageURL:  "https://www.vectorlogo.zone/logos/ansible/ansible-icon.svg",
-		IsShowing: true,
-		Name:      "Ansible",
-		Topic:     "tools",
-		URL:       "https://www.ansible.com/",
-	},
-	{
 		ID:        49,
 		ImageURL:  "https://www.vectorlogo.zone/logos/grpcio/grpcio-ar21.svg",
 		IsShowing: true,
