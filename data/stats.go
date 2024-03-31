@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/bondzai/test/utils"
 	"github.com/valyala/fasthttp"
 )
 
-var apiUrl = GetEnv("GO_WAKATIME_URL", "https://wakatime.com/api/v1/users/current/stats/all_time")
-var apiKey = GetEnv("GO_WAKATIME_API_KEY", "")
+var apiUrl = utils.GetEnv("GO_WAKATIME_URL", "https://wakatime.com/api/v1/users/current/stats/all_time")
+var apiKey = utils.GetEnv("GO_WAKATIME_API_KEY", "")
 
 func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	cleanedData := make([]map[string]interface{}, newLastIndex+1)
