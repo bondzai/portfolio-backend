@@ -147,18 +147,6 @@ var Projects = []Project{
 		Tools:       "",
 	},
 	{
-		HostURL:     "",
-		ID:          12,
-		ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1682211771/project-websocket-channels.png",
-		IsHighlight: true,
-		IsSleep:     false,
-		Language:    "Javascript",
-		Name:        "Websocket Channels",
-		SourceURL:   "https://github.com/bondzai/websocket-channels",
-		Status:      "offline",
-		Tools:       "",
-	},
-	{
 		HostURL:     "https://apollo-catstronauts-client.vercel.app/",
 		ID:          13,
 		ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1694937857/Portfolio/projects/project-cats-client.png",
