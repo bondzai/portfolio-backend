@@ -28,7 +28,7 @@ func endpointHandler(sendNotification func([]string, map[string]interface{}), pl
 func RegisterEndpoints(app *fiber.App) {
 	notificationServices := map[string]notification.NotificationService{
 		"discord": &notification.DiscordWebhookService{
-			WebhookURL: "https://discord.com/api/webhooks/your-discord-webhook-url",
+			WebhookURL: "https://discord.com/api/webhooks/1217803927655809056/aztWw0gljYIb6Hs4AXiw6GmC-pQVrgZz2keDcEDI0eBRYGEZQOQp7gbcAR_T13TfGGnO",
 		},
 		"line": &notification.LineNotifyService{
 			AccessToken: "your-line-access-token",
@@ -36,8 +36,8 @@ func RegisterEndpoints(app *fiber.App) {
 	}
 
 	endpointPlatforms := map[string][]string{
-		"/":               {"line"},
-		"/skills":         {"discord"},
+		"/":               {"line", "discord"},
+		"/skills":         {""},
 		"/certifications": {""},
 		"/projects":       {""},
 		"/wakatime":       {""},

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bondzai/test/data"
+	"github.com/bondzai/test/handlers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
@@ -15,25 +15,7 @@ func main() {
 		AllowCredentials: false,
 	}))
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	app.Get("/skills", func(c *fiber.Ctx) error {
-		return c.JSON(data.Skills)
-	})
-
-	app.Get("/certifications", func(c *fiber.Ctx) error {
-		return c.JSON(data.Certifications)
-	})
-
-	app.Get("/projects", func(c *fiber.Ctx) error {
-		return c.JSON(data.Projects)
-	})
-
-	app.Get("/wakatime", func(c *fiber.Ctx) error {
-		return c.JSON(data.Wakatime)
-	})
+	handlers.RegisterEndpoints(app)
 
 	app.Listen(":10000")
 }
