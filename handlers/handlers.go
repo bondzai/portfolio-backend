@@ -11,7 +11,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Define a handler function for all endpoints
 func endpointHandler(sendNotification func([]string, map[string]interface{}), platforms []string, responseHandler func(*fiber.Ctx) error) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		payload := map[string]interface{}{
@@ -26,9 +25,7 @@ func endpointHandler(sendNotification func([]string, map[string]interface{}), pl
 	}
 }
 
-// RegisterEndpoints registers the endpoints with the Fiber app
 func RegisterEndpoints(app *fiber.App) {
-	// Initialize notification services
 	notificationServices := map[string]notification.NotificationService{
 		"discord": &notification.DiscordWebhookService{
 			WebhookURL: "https://discord.com/api/webhooks/your-discord-webhook-url",
@@ -38,16 +35,14 @@ func RegisterEndpoints(app *fiber.App) {
 		},
 	}
 
-	// Map of endpoint paths and their corresponding notification platforms
 	endpointPlatforms := map[string][]string{
 		"/":               {"line"},
 		"/skills":         {"discord"},
-		"/certifications": {""}, // No notification
-		"/projects":       {""}, // No notification
-		"/wakatime":       {""}, // No notification
+		"/certifications": {""},
+		"/projects":       {""},
+		"/wakatime":       {""},
 	}
 
-	// Map of endpoint paths and their corresponding response handlers
 	endpoints := map[string]func(*fiber.Ctx) error{
 		"/": func(c *fiber.Ctx) error {
 			return c.SendString("Hello, World!")
@@ -66,25 +61,22 @@ func RegisterEndpoints(app *fiber.App) {
 		},
 	}
 
-	// Define a handler function for sending notifications
 	sendNotification := func(platforms []string, payload map[string]interface{}) {
 		if len(platforms) == 0 {
-			return // No platforms specified for notification
+			return
 		}
+
 		for _, platform := range platforms {
 			if service, ok := notificationServices[platform]; ok {
 				if err := service.SendNotification(payload); err != nil {
 					fmt.Printf("Error sending notification to %s: %v\n", platform, err)
-					// Handle error if necessary
 				}
 			} else {
 				fmt.Printf("Notification service for platform %s not found\n", platform)
-				// Handle error if necessary
 			}
 		}
 	}
 
-	// Register endpoints with different notification platforms and response handlers
 	for path, handler := range endpoints {
 		platforms := endpointPlatforms[path]
 		app.Get(path, endpointHandler(sendNotification, platforms, handler))
