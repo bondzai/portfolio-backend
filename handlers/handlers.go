@@ -4,10 +4,10 @@ package handlers
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/bondzai/test/data"
 	"github.com/bondzai/test/notification"
+	"github.com/bondzai/test/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,8 +16,7 @@ func endpointHandler(sendNotification func([]string, map[string]interface{}), pl
 		payload := map[string]interface{}{
 			"event_type": c.Path(),
 			"data": map[string]interface{}{
-				"user_id":   "user123",
-				"timestamp": time.Now(),
+				"ip": c.IP(),
 			},
 		}
 		sendNotification(platforms, payload)
@@ -25,18 +24,21 @@ func endpointHandler(sendNotification func([]string, map[string]interface{}), pl
 	}
 }
 
+var WebhookURL = utils.GetEnv("DISCORD_WEBHOOK_URL", "")
+var LineNotifyAccessToken = utils.GetEnv("LINE_NOTIFY_TOKEN", "")
+
 func RegisterEndpoints(app *fiber.App) {
 	notificationServices := map[string]notification.NotificationService{
 		"discord": &notification.DiscordWebhookService{
-			WebhookURL: "https://discord.com/api/webhooks/1217803927655809056/aztWw0gljYIb6Hs4AXiw6GmC-pQVrgZz2keDcEDI0eBRYGEZQOQp7gbcAR_T13TfGGnO",
+			WebhookURL: WebhookURL,
 		},
 		"line": &notification.LineNotifyService{
-			AccessToken: "your-line-access-token",
+			AccessToken: LineNotifyAccessToken,
 		},
 	}
 
 	endpointPlatforms := map[string][]string{
-		"/":               {"line", "discord"},
+		"/":               {"discord"},
 		"/skills":         {""},
 		"/certifications": {""},
 		"/projects":       {""},
@@ -45,7 +47,7 @@ func RegisterEndpoints(app *fiber.App) {
 
 	endpoints := map[string]func(*fiber.Ctx) error{
 		"/": func(c *fiber.Ctx) error {
-			return c.SendString("Hello, World!")
+			return c.SendString("Ok")
 		},
 		"/skills": func(c *fiber.Ctx) error {
 			return c.JSON(data.Skills)
