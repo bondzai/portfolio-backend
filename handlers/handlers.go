@@ -38,7 +38,7 @@ func RegisterEndpoints(app *fiber.App) {
 	}
 
 	endpointPlatforms := map[string][]string{
-		"/":               {"discord"},
+		"/":               {""},
 		"/skills":         {""},
 		"/certifications": {""},
 		"/projects":       {""},
