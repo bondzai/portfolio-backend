@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/bondzai/test/handlers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -10,12 +12,12 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "https://thejb.onrender.com, http://localhost:5173",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowOrigins:     os.Getenv("GO_CORS_ORIGINS"),
+		AllowHeaders:     os.Getenv("GO_CORS_HEADERS"),
 		AllowCredentials: false,
 	}))
 
 	handlers.RegisterEndpoints(app)
 
-	app.Listen(":10000")
+	app.Listen(":" + os.Getenv("GO_PORT"))
 }
