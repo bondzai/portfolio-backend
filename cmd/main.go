@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
-	"strconv"
 	"sync"
 
 	"github.com/bondzai/test/handlers"
@@ -13,6 +13,7 @@ import (
 
 var (
 	activeUsers int
+	totalUsers  int
 	mutex       sync.Mutex
 	connections []*websocket.Conn
 )
@@ -29,6 +30,7 @@ func main() {
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		mutex.Lock()
 		connections = append(connections, c)
+		totalUsers++
 		activeUsers = len(connections)
 		mutex.Unlock()
 
@@ -64,8 +66,22 @@ func main() {
 func sendActiveUserCount() {
 	mutex.Lock()
 	defer mutex.Unlock()
+
+	data := struct {
+		ActiveUsers int `json:"activeUsers"`
+		TotalUsers  int `json:"totalUsers"`
+	}{
+		ActiveUsers: activeUsers,
+		TotalUsers:  totalUsers,
+	}
+
+	message, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
+
 	for _, conn := range connections {
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(activeUsers))); err != nil {
+		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
 			return
 		}
 	}
