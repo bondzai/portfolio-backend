@@ -11,7 +11,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func endpointHandler(sendNotification func([]string, map[string]interface{}), platforms []string, responseHandler func(*fiber.Ctx) error) func(*fiber.Ctx) error {
+func endpointHandler(
+	sendNotification func([]string, map[string]interface{}),
+	platforms []string,
+	responseHandler func(*fiber.Ctx) error) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		payload := map[string]interface{}{
 			"event_type": c.Path(),
