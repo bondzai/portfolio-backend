@@ -73,8 +73,6 @@ func RegisterEndpoints(app *fiber.App) {
 				if err := service.SendNotification(payload); err != nil {
 					fmt.Printf("Error sending notification to %s: %v\n", platform, err)
 				}
-			} else {
-				fmt.Printf("Notification service for platform %s not found\n", platform)
 			}
 		}
 	}
