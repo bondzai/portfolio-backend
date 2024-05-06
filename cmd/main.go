@@ -11,16 +11,76 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-var (
-	activeUsers int
-	totalUsers  int
-	mutex       sync.Mutex
-	connections []*websocket.Conn
-)
+type WebSocketHandler interface {
+	HandleConnection(*websocket.Conn)
+}
 
-type usageCount struct {
+type UserCountUpdater interface {
+	UpdateUserCount()
+}
+
+type WebSocketManager struct {
+	Connections []*websocket.Conn
+	ActiveUsers int
+	TotalUsers  int
+	mutex       sync.Mutex
+}
+
+func (wsm *WebSocketManager) HandleConnection(c *websocket.Conn) {
+	wsm.mutex.Lock()
+	wsm.Connections = append(wsm.Connections, c)
+	wsm.TotalUsers++
+	wsm.ActiveUsers = len(wsm.Connections)
+	wsm.mutex.Unlock()
+
+	wsm.UpdateUserCount()
+
+	defer func() {
+		wsm.mutex.Lock()
+		for i, conn := range wsm.Connections {
+			if conn == c {
+				wsm.Connections = append(wsm.Connections[:i], wsm.Connections[i+1:]...)
+				break
+			}
+		}
+		wsm.ActiveUsers = len(wsm.Connections)
+		wsm.mutex.Unlock()
+		wsm.UpdateUserCount()
+	}()
+
+	for {
+		_, _, err := c.ReadMessage()
+		if err != nil {
+			break
+		}
+		// handle received messages here
+	}
+}
+
+type UsageCount struct {
 	ActiveUsers int `json:"activeUsers"`
 	TotalUsers  int `json:"totalUsers"`
+}
+
+func (wsm *WebSocketManager) UpdateUserCount() {
+	wsm.mutex.Lock()
+	defer wsm.mutex.Unlock()
+
+	data := UsageCount{
+		ActiveUsers: wsm.ActiveUsers,
+		TotalUsers:  wsm.TotalUsers,
+	}
+
+	message, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
+
+	for _, conn := range wsm.Connections {
+		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			return
+		}
+	}
 }
 
 func main() {
@@ -32,59 +92,10 @@ func main() {
 		AllowCredentials: false,
 	}))
 
-	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
-		mutex.Lock()
-		connections = append(connections, c)
-		totalUsers++
-		activeUsers = len(connections)
-		mutex.Unlock()
-
-		sendActiveUserCount()
-
-		defer func() {
-			mutex.Lock()
-			for i, conn := range connections {
-				if conn == c {
-					connections = append(connections[:i], connections[i+1:]...)
-					break
-				}
-			}
-			activeUsers = len(connections)
-			mutex.Unlock()
-			sendActiveUserCount()
-		}()
-
-		for {
-			_, _, err := c.ReadMessage()
-			if err != nil {
-				break
-			}
-			//handle received messages here
-		}
-	}))
+	wsm := &WebSocketManager{}
+	app.Get("/ws", websocket.New(wsm.HandleConnection))
 
 	handlers.RegisterEndpoints(app)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
-}
-
-func sendActiveUserCount() {
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	data := usageCount{
-		ActiveUsers: activeUsers,
-		TotalUsers:  totalUsers,
-	}
-
-	message, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-
-	for _, conn := range connections {
-		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			return
-		}
-	}
 }
