@@ -18,6 +18,11 @@ var (
 	connections []*websocket.Conn
 )
 
+type usageCount struct {
+	ActiveUsers int `json:"activeUsers"`
+	TotalUsers  int `json:"totalUsers"`
+}
+
 func main() {
 	app := fiber.New()
 
@@ -67,10 +72,7 @@ func sendActiveUserCount() {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	data := struct {
-		ActiveUsers int `json:"activeUsers"`
-		TotalUsers  int `json:"totalUsers"`
-	}{
+	data := usageCount{
 		ActiveUsers: activeUsers,
 		TotalUsers:  totalUsers,
 	}
