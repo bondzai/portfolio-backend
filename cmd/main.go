@@ -37,6 +37,7 @@ func (wsm *WebSocketManager) HandleConnection(c *websocket.Conn) {
 	wsm.TotalUsers++
 	wsm.ActiveUsers = len(wsm.Connections)
 	wsm.mutex.Unlock()
+	wsm.UpdateUserCount()
 
 	defer func() {
 		wsm.mutex.Lock()
@@ -107,12 +108,6 @@ func main() {
 
 	handlers.RegisterEndpoints(app)
 
-	go func() {
-		if err := app.Listen(":" + os.Getenv("GO_PORT")); err != nil {
-			log.Fatalf("Fiber application failed to start: %v", err)
-		}
-	}()
-
 	c := cron.New()
 	c.AddFunc("59 23 * * *", func() {
 		wsm.mutex.Lock()
@@ -129,5 +124,7 @@ func main() {
 	c.Start()
 	defer c.Stop()
 
-	select {}
+	log.Println("cron start...")
+
+	app.Listen(":" + os.Getenv("GO_PORT"))
 }
