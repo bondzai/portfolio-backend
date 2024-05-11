@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
+	"github.com/robfig/cron/v3"
 )
 
 type WebSocketHandler interface {
@@ -37,11 +38,6 @@ func (wsm *WebSocketManager) HandleConnection(c *websocket.Conn) {
 	wsm.ActiveUsers = len(wsm.Connections)
 	wsm.mutex.Unlock()
 
-	wsm.DBClient.SetDataToMongo(&interfaces.User{
-		Time:       time.Now(),
-		TotalUsers: wsm.TotalUsers,
-	})
-
 	defer func() {
 		wsm.mutex.Lock()
 		for i, conn := range wsm.Connections {
@@ -60,7 +56,7 @@ func (wsm *WebSocketManager) HandleConnection(c *websocket.Conn) {
 		if err != nil {
 			break
 		}
-		// handle received messages here
+		log.Println(err)
 	}
 }
 
@@ -99,7 +95,7 @@ func main() {
 		AllowCredentials: false,
 	}))
 
-	mongoClient, err := interfaces.NewMongoDBClient(os.Getenv("GO_MONGODB_URL"), "JBDB", "JBCOL")
+	mongoClient, err := interfaces.NewMongoDBClient(os.Getenv("GO_MONGODB_URL"), "portfolio", "usage")
 	if err != nil {
 		log.Print(err)
 	}
@@ -111,5 +107,27 @@ func main() {
 
 	handlers.RegisterEndpoints(app)
 
-	app.Listen(":" + os.Getenv("GO_PORT"))
+	go func() {
+		if err := app.Listen(":" + os.Getenv("GO_PORT")); err != nil {
+			log.Fatalf("Fiber application failed to start: %v", err)
+		}
+	}()
+
+	c := cron.New()
+	c.AddFunc("59 23 * * *", func() {
+		wsm.mutex.Lock()
+		defer wsm.mutex.Unlock()
+
+		totalUsers := wsm.TotalUsers
+		wsm.TotalUsers = 0
+
+		wsm.DBClient.SetDataToMongo(&interfaces.User{
+			Time:       time.Now(),
+			TotalUsers: totalUsers,
+		})
+	})
+	c.Start()
+	defer c.Stop()
+
+	select {}
 }
