@@ -7,6 +7,11 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
+var (
+	org         = utils.GetEnv("GO_INFLUX_ORG", "")
+	user_bucket = utils.GetEnv("GO_INFLUX_BUCKET_USER", "")
+)
+
 // InfluxClientInterface defines methods required for an InfluxDB client.
 type InfluxClientInterface interface {
 	SetDataToInflux(data *User)
@@ -23,11 +28,6 @@ func NewInfluxClient(host, token string) *InfluxClient {
 		client: influxdb2.NewClient(host, token),
 	}
 }
-
-var (
-	org         = utils.GetEnv("GO_INFLUX_ORG", "")
-	user_bucket = utils.GetEnv("GO_INFLUX_BUCKET_USER", "")
-)
 
 // SetDataToInflux writes data to InfluxDB.
 func (c *InfluxClient) SetDataToInflux(data *User) {
