@@ -93,6 +93,7 @@ func main() {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     os.Getenv("GO_CORS_ORIGINS"),
 		AllowHeaders:     os.Getenv("GO_CORS_HEADERS"),
+		ExposeHeaders:    "Content-Length",
 		AllowCredentials: false,
 	}))
 
