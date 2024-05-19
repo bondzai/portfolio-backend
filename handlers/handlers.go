@@ -11,6 +11,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var WebhookURL = utils.GetEnv("DISCORD_WEBHOOK_URL", "")
+var LineNotifyAccessToken = utils.GetEnv("LINE_NOTIFY_TOKEN", "")
+
 func endpointHandler(
 	sendNotification func([]string, map[string]interface{}),
 	platforms []string,
@@ -26,9 +29,6 @@ func endpointHandler(
 		return responseHandler(c)
 	}
 }
-
-var WebhookURL = utils.GetEnv("DISCORD_WEBHOOK_URL", "")
-var LineNotifyAccessToken = utils.GetEnv("LINE_NOTIFY_TOKEN", "")
 
 func RegisterEndpoints(app *fiber.App) {
 	notificationServices := map[string]notification.NotificationService{
