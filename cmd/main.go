@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bondzai/test/handlers"
+	"github.com/bondzai/test/data"
 	"github.com/bondzai/test/interfaces"
 	"github.com/bondzai/test/userconnection"
 
@@ -15,7 +15,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func initializeMongoDB() interfaces.MongoDBClientInterface {
+func initMongoDB() interfaces.MongoDBClientInterface {
 	mongoClient, err := interfaces.NewMongoDBClient(
 		os.Getenv("GO_MONGODB_URL"),
 		os.Getenv("GO_MONGODB_DB"),
@@ -34,13 +34,11 @@ func main() {
 
 	configureCORS(app)
 
-	mongoClient := initializeMongoDB()
+	mongoClient := initMongoDB()
 	ucm := userconnection.NewUserConnectionManager(mongoClient)
 
 	setupWebSocketRoutes(app, ucm)
-
-	handlers.RegisterEndpoints(app)
-
+	setupAPIRoutes(app)
 	startCronJob(ucm)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
@@ -57,6 +55,24 @@ func configureCORS(app *fiber.App) {
 
 func setupWebSocketRoutes(app *fiber.App, ucm *userconnection.UserConnectionManager) {
 	app.Get("/ws", websocket.New(ucm.HandleConnection))
+}
+
+func setupAPIRoutes(app *fiber.App) {
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Ok")
+	})
+	app.Get("/skills", func(c *fiber.Ctx) error {
+		return c.JSON(data.Skills)
+	})
+	app.Get("/certifications", func(c *fiber.Ctx) error {
+		return c.JSON(data.Certifications)
+	})
+	app.Get("/projects", func(c *fiber.Ctx) error {
+		return c.JSON(data.Projects)
+	})
+	app.Get("/wakatime", func(c *fiber.Ctx) error {
+		return c.JSON(data.Wakatime)
+	})
 }
 
 func startCronJob(ucm *userconnection.UserConnectionManager) {
