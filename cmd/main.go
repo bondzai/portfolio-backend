@@ -16,10 +16,16 @@ import (
 )
 
 func initializeMongoDB() interfaces.MongoDBClientInterface {
-	mongoClient, err := interfaces.NewMongoDBClient(os.Getenv("GO_MONGODB_URL"), "portfolio", "usage")
+	mongoClient, err := interfaces.NewMongoDBClient(
+		os.Getenv("GO_MONGODB_URL"),
+		os.Getenv("GO_MONGODB_DB"),
+		os.Getenv("GO_MONGODB_COL"),
+	)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
+
 	return mongoClient
 }
 
