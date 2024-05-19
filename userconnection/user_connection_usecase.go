@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-type UserConnectionManager struct {
+type Manager struct {
 	connections []*websocket.Conn
 	activeUsers int
 	totalUsers  int
@@ -18,15 +18,15 @@ type UserConnectionManager struct {
 	dbClient    interfaces.MongoDBClientInterface
 }
 
-func NewUserConnectionManager(dbClient interfaces.MongoDBClientInterface) *UserConnectionManager {
-	return &UserConnectionManager{
+func NewManager(dbClient interfaces.MongoDBClientInterface) *Manager {
+	return &Manager{
 		dbClient: dbClient,
 	}
 }
 
-func (ucm *UserConnectionManager) HandleConnection(c *websocket.Conn) {
-	ucm.addConnection(c)
-	defer ucm.removeConnection(c)
+func (m *Manager) HandleConnection(c *websocket.Conn) {
+	m.addConnection(c)
+	defer m.removeConnection(c)
 
 	for {
 		_, _, err := c.ReadMessage()
@@ -37,28 +37,28 @@ func (ucm *UserConnectionManager) HandleConnection(c *websocket.Conn) {
 	}
 }
 
-func (ucm *UserConnectionManager) addConnection(c *websocket.Conn) {
-	ucm.mutex.Lock()
-	defer ucm.mutex.Unlock()
+func (m *Manager) addConnection(c *websocket.Conn) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
 
-	ucm.connections = append(ucm.connections, c)
-	ucm.totalUsers++
-	ucm.activeUsers = len(ucm.connections)
-	ucm.updateUserCount()
+	m.connections = append(m.connections, c)
+	m.totalUsers++
+	m.activeUsers = len(m.connections)
+	m.updateUserCount()
 }
 
-func (ucm *UserConnectionManager) removeConnection(c *websocket.Conn) {
-	ucm.mutex.Lock()
-	defer ucm.mutex.Unlock()
+func (m *Manager) removeConnection(c *websocket.Conn) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
 
-	for i, conn := range ucm.connections {
+	for i, conn := range m.connections {
 		if conn == c {
-			ucm.connections = append(ucm.connections[:i], ucm.connections[i+1:]...)
+			m.connections = append(m.connections[:i], m.connections[i+1:]...)
 			break
 		}
 	}
-	ucm.activeUsers = len(ucm.connections)
-	ucm.updateUserCount()
+	m.activeUsers = len(m.connections)
+	m.updateUserCount()
 }
 
 type UsageCount struct {
@@ -66,10 +66,10 @@ type UsageCount struct {
 	TotalUsers  int `json:"totalUsers"`
 }
 
-func (ucm *UserConnectionManager) updateUserCount() {
+func (m *Manager) updateUserCount() {
 	data := UsageCount{
-		ActiveUsers: ucm.activeUsers,
-		TotalUsers:  ucm.totalUsers,
+		ActiveUsers: m.activeUsers,
+		TotalUsers:  m.totalUsers,
 	}
 
 	message, err := json.Marshal(data)
@@ -78,21 +78,21 @@ func (ucm *UserConnectionManager) updateUserCount() {
 		return
 	}
 
-	for _, conn := range ucm.connections {
+	for _, conn := range m.connections {
 		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
 			log.Println("Error writing message:", err)
 		}
 	}
 }
 
-func (ucm *UserConnectionManager) ResetDailyUserCount() {
-	ucm.mutex.Lock()
-	defer ucm.mutex.Unlock()
+func (m *Manager) ResetDailyUserCount() {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
 
-	totalUsers := ucm.totalUsers
-	ucm.totalUsers = 0
+	totalUsers := m.totalUsers
+	m.totalUsers = 0
 
-	ucm.dbClient.SetDataToMongo(&interfaces.User{
+	m.dbClient.SetDataToMongo(&interfaces.User{
 		Time:       time.Now(),
 		TotalUsers: totalUsers,
 	})

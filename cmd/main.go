@@ -35,11 +35,11 @@ func main() {
 	configureCORS(app)
 
 	mongoClient := initMongoDB()
-	ucm := userconnection.NewUserConnectionManager(mongoClient)
+	userManager := userconnection.NewManager(mongoClient)
 
-	setupWebSocketRoutes(app, ucm)
+	setupWebSocketRoutes(app, userManager)
 	setupAPIRoutes(app)
-	startCronJob(ucm)
+	startCronJob(userManager)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
@@ -53,8 +53,8 @@ func configureCORS(app *fiber.App) {
 	}))
 }
 
-func setupWebSocketRoutes(app *fiber.App, ucm *userconnection.UserConnectionManager) {
-	app.Get("/ws", websocket.New(ucm.HandleConnection))
+func setupWebSocketRoutes(app *fiber.App, userManager *userconnection.Manager) {
+	app.Get("/ws", websocket.New(userManager.HandleConnection))
 }
 
 func setupAPIRoutes(app *fiber.App) {
@@ -75,10 +75,10 @@ func setupAPIRoutes(app *fiber.App) {
 	})
 }
 
-func startCronJob(ucm *userconnection.UserConnectionManager) {
+func startCronJob(userManager *userconnection.Manager) {
 	c := cron.New()
 	c.AddFunc("59 23 * * *", func() {
-		ucm.ResetDailyUserCount()
+		userManager.ResetDailyUserCount()
 	})
 	c.Start()
 	defer c.Stop()
