@@ -7,11 +7,21 @@ import (
 	"github.com/bondzai/test/handlers"
 	"github.com/bondzai/test/interfaces"
 	"github.com/bondzai/test/userconnection"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
+
 	"github.com/robfig/cron/v3"
 )
+
+func initializeMongoDB() interfaces.MongoDBClientInterface {
+	mongoClient, err := interfaces.NewMongoDBClient(os.Getenv("GO_MONGODB_URL"), "portfolio", "usage")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return mongoClient
+}
 
 func main() {
 	app := fiber.New()
@@ -19,12 +29,13 @@ func main() {
 	configureCORS(app)
 
 	mongoClient := initializeMongoDB()
-	userManager := userconnection.NewUserConnectionManager(mongoClient)
-	setupWebSocketRoutes(app, userManager)
+	ucm := userconnection.NewUserConnectionManager(mongoClient)
+
+	setupWebSocketRoutes(app, ucm)
 
 	handlers.RegisterEndpoints(app)
 
-	startCronJob(userManager)
+	startCronJob(ucm)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
@@ -36,14 +47,6 @@ func configureCORS(app *fiber.App) {
 		ExposeHeaders:    "Content-Length",
 		AllowCredentials: false,
 	}))
-}
-
-func initializeMongoDB() interfaces.MongoDBClientInterface {
-	mongoClient, err := interfaces.NewMongoDBClient(os.Getenv("GO_MONGODB_URL"), "portfolio", "usage")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return mongoClient
 }
 
 func setupWebSocketRoutes(app *fiber.App, ucm *userconnection.UserConnectionManager) {
