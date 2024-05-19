@@ -1,11 +1,11 @@
-package data
+package domain
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
-	"github.com/bondzai/test/utils"
+	"github.com/bondzai/portfolio-backend/internal/utils"
 	"github.com/valyala/fasthttp"
 )
 

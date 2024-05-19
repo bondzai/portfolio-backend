@@ -1,4 +1,4 @@
-package data
+package domain
 
 type Certification struct {
 	ID          int    `json:"id"`

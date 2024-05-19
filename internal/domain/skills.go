@@ -1,4 +1,4 @@
-package data
+package domain
 
 type Skill struct {
 	ID        int    `json:"id"`
