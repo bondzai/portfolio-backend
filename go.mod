@@ -1,4 +1,4 @@
-module github.com/bondzai/test
+module github.com/bondzai/portfolio-backend
 
 go 1.21.5
 

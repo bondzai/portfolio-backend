@@ -1,4 +1,4 @@
-package userconnection
+package usecases
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bondzai/test/interfaces"
+	"github.com/bondzai/portfolio-backend/interfaces"
 	"github.com/gofiber/websocket/v2"
 )
 

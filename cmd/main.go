@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/bondzai/test/data"
-	"github.com/bondzai/test/interfaces"
-	"github.com/bondzai/test/userconnection"
+	"github.com/bondzai/portfolio-backend/data"
+	"github.com/bondzai/portfolio-backend/interfaces"
+	"github.com/bondzai/portfolio-backend/usecases"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -35,7 +35,7 @@ func main() {
 	configureCORS(app)
 
 	mongoClient := initMongoDB()
-	userManager := userconnection.NewManager(mongoClient)
+	userManager := usecases.NewManager(mongoClient)
 
 	setupWebSocketRoutes(app, userManager)
 	setupAPIRoutes(app)
@@ -53,7 +53,7 @@ func configureCORS(app *fiber.App) {
 	}))
 }
 
-func setupWebSocketRoutes(app *fiber.App, userManager *userconnection.Manager) {
+func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
 	app.Get("/ws", websocket.New(userManager.HandleConnection))
 }
 
@@ -75,7 +75,7 @@ func setupAPIRoutes(app *fiber.App) {
 	})
 }
 
-func startCronJob(userManager *userconnection.Manager) {
+func startCronJob(userManager *usecases.Manager) {
 	c := cron.New()
 	c.AddFunc("59 23 * * *", func() {
 		userManager.ResetDailyUserCount()
