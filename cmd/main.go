@@ -6,7 +6,7 @@ import (
 
 	"github.com/bondzai/test/handlers"
 	"github.com/bondzai/test/interfaces"
-	"github.com/bondzai/test/websocketmanager"
+	"github.com/bondzai/test/userconnection"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
@@ -19,12 +19,12 @@ func main() {
 	configureCORS(app)
 
 	mongoClient := initializeMongoDB()
-	wsm := websocketmanager.NewWebSocketManager(mongoClient)
-	setupWebSocketRoutes(app, wsm)
+	userManager := userconnection.NewUserConnectionManager(mongoClient)
+	setupWebSocketRoutes(app, userManager)
 
 	handlers.RegisterEndpoints(app)
 
-	startCronJob(wsm)
+	startCronJob(userManager)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
@@ -46,14 +46,14 @@ func initializeMongoDB() interfaces.MongoDBClientInterface {
 	return mongoClient
 }
 
-func setupWebSocketRoutes(app *fiber.App, wsm *websocketmanager.WebSocketManager) {
-	app.Get("/ws", websocket.New(wsm.HandleConnection))
+func setupWebSocketRoutes(app *fiber.App, ucm *userconnection.UserConnectionManager) {
+	app.Get("/ws", websocket.New(ucm.HandleConnection))
 }
 
-func startCronJob(wsm *websocketmanager.WebSocketManager) {
+func startCronJob(ucm *userconnection.UserConnectionManager) {
 	c := cron.New()
 	c.AddFunc("59 23 * * *", func() {
-		wsm.ResetDailyUserCount()
+		ucm.ResetDailyUserCount()
 	})
 	c.Start()
 	defer c.Stop()
