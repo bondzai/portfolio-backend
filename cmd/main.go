@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bondzai/portfolio-backend/internal/data"
+	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/bondzai/portfolio-backend/internal/interfaces"
 	"github.com/bondzai/portfolio-backend/internal/usecases"
 
@@ -62,16 +62,16 @@ func setupAPIRoutes(app *fiber.App) {
 		return c.SendString("Ok")
 	})
 	app.Get("/skills", func(c *fiber.Ctx) error {
-		return c.JSON(data.Skills)
+		return c.JSON(domain.Skills)
 	})
 	app.Get("/certifications", func(c *fiber.Ctx) error {
-		return c.JSON(data.Certifications)
+		return c.JSON(domain.Certifications)
 	})
 	app.Get("/projects", func(c *fiber.Ctx) error {
-		return c.JSON(data.Projects)
+		return c.JSON(domain.Projects)
 	})
 	app.Get("/wakatime", func(c *fiber.Ctx) error {
-		return c.JSON(data.Wakatime)
+		return c.JSON(domain.Wakatime)
 	})
 }
 
