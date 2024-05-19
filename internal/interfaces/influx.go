@@ -3,7 +3,7 @@ package interfaces
 import (
 	"time"
 
-	"github.com/bondzai/portfolio-backend/utils"
+	"github.com/bondzai/portfolio-backend/internal/utils"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 

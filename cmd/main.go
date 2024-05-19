@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/bondzai/portfolio-backend/data"
-	"github.com/bondzai/portfolio-backend/interfaces"
-	"github.com/bondzai/portfolio-backend/usecases"
+	"github.com/bondzai/portfolio-backend/internal/data"
+	"github.com/bondzai/portfolio-backend/internal/interfaces"
+	"github.com/bondzai/portfolio-backend/internal/usecases"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

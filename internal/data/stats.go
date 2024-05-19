@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/bondzai/portfolio-backend/utils"
+	"github.com/bondzai/portfolio-backend/internal/utils"
 	"github.com/valyala/fasthttp"
 )
 
