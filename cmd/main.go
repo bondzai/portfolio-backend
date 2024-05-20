@@ -15,20 +15,6 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func initMongoDB() interfaces.MongoDBClientInterface {
-	mongoClient, err := interfaces.NewMongoDBClient(
-		os.Getenv("GO_MONGODB_URL"),
-		os.Getenv("GO_MONGODB_DB"),
-		os.Getenv("GO_MONGODB_COL"),
-	)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	return mongoClient
-}
-
 func main() {
 	app := fiber.New()
 
@@ -42,6 +28,20 @@ func main() {
 	startCronJob(userManager)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
+}
+
+func initMongoDB() interfaces.MongoDBClientInterface {
+	mongoClient, err := interfaces.NewMongoDBClient(
+		os.Getenv("GO_MONGODB_URL"),
+		os.Getenv("GO_MONGODB_DB"),
+		os.Getenv("GO_MONGODB_COL"),
+	)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return mongoClient
 }
 
 func configureCORS(app *fiber.App) {
