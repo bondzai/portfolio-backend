@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
+	interfaces "github.com/bondzai/portfolio-backend/internal/adapters"
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/interfaces"
 	"github.com/bondzai/portfolio-backend/internal/usecases"
 
 	"github.com/gofiber/fiber/v2"
