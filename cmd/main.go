@@ -5,8 +5,8 @@ import (
 	"os"
 
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
-	domain "github.com/bondzai/portfolio-backend/internal/core/models"
-	"github.com/bondzai/portfolio-backend/internal/usecases"
+	usecases "github.com/bondzai/portfolio-backend/internal/core"
+	models "github.com/bondzai/portfolio-backend/internal/core/models"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -62,16 +62,16 @@ func setupAPIRoutes(app *fiber.App) {
 		return c.SendString("Ok")
 	})
 	app.Get("/skills", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Skills)
+		return c.JSON(models.Skills)
 	})
 	app.Get("/certifications", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Certifications)
+		return c.JSON(models.Certifications)
 	})
 	app.Get("/projects", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Projects)
+		return c.JSON(models.Projects)
 	})
 	app.Get("/wakatime", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Wakatime)
+		return c.JSON(models.Wakatime)
 	})
 }
 
