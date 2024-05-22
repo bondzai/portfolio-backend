@@ -64,16 +64,22 @@ func setupAPIRoutes(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Ok")
 	})
-	app.Get("/skills", func(c *fiber.Ctx) error {
-		return c.JSON(models.Skills)
-	})
+
 	app.Get("/certifications", func(c *fiber.Ctx) error {
 		certs, _ := services.NewCertService(repo).ReadCerts()
 		return c.JSON(certs)
 	})
+
 	app.Get("/projects", func(c *fiber.Ctx) error {
-		return c.JSON(models.Projects)
+		projects, _ := services.NewProjectService(repo).ReadProjects()
+		return c.JSON(projects)
 	})
+
+	app.Get("/skills", func(c *fiber.Ctx) error {
+		skills, _ := services.NewSkillService(repo).ReadSkills()
+		return c.JSON(skills)
+	})
+
 	app.Get("/wakatime", func(c *fiber.Ctx) error {
 		return c.JSON(models.Wakatime)
 	})
@@ -81,9 +87,11 @@ func setupAPIRoutes(app *fiber.App) {
 
 func startCronJob(userManager *usecases.Manager) {
 	c := cron.New()
+
 	c.AddFunc("59 23 * * *", func() {
 		userManager.ResetDailyUserCount()
 	})
+
 	c.Start()
 	defer c.Stop()
 
