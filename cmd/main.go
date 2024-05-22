@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	interfaces "github.com/bondzai/portfolio-backend/internal/adapters"
-	domain "github.com/bondzai/portfolio-backend/internal/core"
+	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
+	domain "github.com/bondzai/portfolio-backend/internal/core/models"
 	"github.com/bondzai/portfolio-backend/internal/usecases"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,8 +30,8 @@ func main() {
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
 
-func initMongoDB() interfaces.MongoDBClientInterface {
-	mongoClient, err := interfaces.NewMongoDBClient(
+func initMongoDB() repository.MongoDBClientInterface {
+	mongoClient, err := repository.NewMongoDBClient(
 		os.Getenv("GO_MONGODB_URL"),
 		os.Getenv("GO_MONGODB_DB"),
 		os.Getenv("GO_MONGODB_COL"),
