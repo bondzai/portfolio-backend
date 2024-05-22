@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
+	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	"github.com/gofiber/websocket/v2"
 )
 
