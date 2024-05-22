@@ -5,7 +5,7 @@ import (
 	"os"
 
 	interfaces "github.com/bondzai/portfolio-backend/internal/adapters"
-	"github.com/bondzai/portfolio-backend/internal/domain"
+	domain "github.com/bondzai/portfolio-backend/internal/core"
 	"github.com/bondzai/portfolio-backend/internal/usecases"
 
 	"github.com/gofiber/fiber/v2"
