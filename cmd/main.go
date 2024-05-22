@@ -7,6 +7,7 @@ import (
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
 	"github.com/bondzai/portfolio-backend/internal/core/models"
+	"github.com/bondzai/portfolio-backend/internal/core/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -58,6 +59,8 @@ func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
 }
 
 func setupAPIRoutes(app *fiber.App) {
+	var repo = repository.NewMock()
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Ok")
 	})
@@ -65,7 +68,8 @@ func setupAPIRoutes(app *fiber.App) {
 		return c.JSON(models.Skills)
 	})
 	app.Get("/certifications", func(c *fiber.Ctx) error {
-		return c.JSON(models.Certifications)
+		certs, _ := services.NewCertService(repo).ReadCerts()
+		return c.JSON(certs)
 	})
 	app.Get("/projects", func(c *fiber.Ctx) error {
 		return c.JSON(models.Projects)

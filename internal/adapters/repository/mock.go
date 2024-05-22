@@ -4,7 +4,13 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/core/models"
 )
 
-func ReadCerts() ([]*models.Certification, error) {
+type MockRepository struct{}
+
+func NewMock() *MockRepository {
+	return &MockRepository{}
+}
+
+func (mr *MockRepository) ReadCerts() ([]*models.Certification, error) {
 	certifications := []*models.Certification{
 		{
 			ID:          1,
