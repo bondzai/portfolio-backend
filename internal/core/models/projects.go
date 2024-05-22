@@ -1,4 +1,4 @@
-package domain
+package models
 
 type Project struct {
 	HostURL     string `json:"host_url"`

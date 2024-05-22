@@ -1,4 +1,4 @@
-package domain
+package models
 
 type Certification struct {
 	ID          int    `json:"id"`

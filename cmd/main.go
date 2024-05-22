@@ -6,7 +6,7 @@ import (
 
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
-	models "github.com/bondzai/portfolio-backend/internal/core/models"
+	"github.com/bondzai/portfolio-backend/internal/core/models"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
