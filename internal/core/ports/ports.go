@@ -4,12 +4,32 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/core/models"
 )
 
-// primary port for input data
-type CertService interface {
-	ReadCerts() ([]*models.Certification, error)
-}
+type (
+	CertService interface {
+		ReadCerts() ([]*models.Certification, error)
+	}
 
-// secondary port for output data
-type CertRepo interface {
-	ReadCerts() ([]*models.Certification, error)
-}
+	CertRepo interface {
+		ReadCerts() ([]*models.Certification, error)
+	}
+)
+
+type (
+	ProjectService interface {
+		ReadProjects() ([]*models.Project, error)
+	}
+
+	ProjectRepo interface {
+		ReadProjects() ([]*models.Project, error)
+	}
+)
+
+type (
+	SkillService interface {
+		ReadSkills() ([]*models.Skill, error)
+	}
+
+	SkillRepo interface {
+		ReadSkills() ([]*models.Skill, error)
+	}
+)
