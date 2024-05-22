@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/interfaces"
-	"github.com/bondzai/portfolio-backend/internal/usecases"
+	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
+	usecases "github.com/bondzai/portfolio-backend/internal/core"
+	"github.com/bondzai/portfolio-backend/internal/core/models"
+	"github.com/bondzai/portfolio-backend/internal/core/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -30,8 +31,8 @@ func main() {
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
 
-func initMongoDB() interfaces.MongoDBClientInterface {
-	mongoClient, err := interfaces.NewMongoDBClient(
+func initMongoDB() repository.MongoDBClientInterface {
+	mongoClient, err := repository.NewMongoDBClient(
 		os.Getenv("GO_MONGODB_URL"),
 		os.Getenv("GO_MONGODB_DB"),
 		os.Getenv("GO_MONGODB_COL"),
@@ -58,28 +59,39 @@ func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
 }
 
 func setupAPIRoutes(app *fiber.App) {
+	var repo = repository.NewMock()
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Ok")
 	})
-	app.Get("/skills", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Skills)
-	})
+
 	app.Get("/certifications", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Certifications)
+		certs, _ := services.NewCertService(repo).ReadCerts()
+		return c.JSON(certs)
 	})
+
 	app.Get("/projects", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Projects)
+		projects, _ := services.NewProjectService(repo).ReadProjects()
+		return c.JSON(projects)
 	})
+
+	app.Get("/skills", func(c *fiber.Ctx) error {
+		skills, _ := services.NewSkillService(repo).ReadSkills()
+		return c.JSON(skills)
+	})
+
 	app.Get("/wakatime", func(c *fiber.Ctx) error {
-		return c.JSON(domain.Wakatime)
+		return c.JSON(models.Wakatime)
 	})
 }
 
 func startCronJob(userManager *usecases.Manager) {
 	c := cron.New()
+
 	c.AddFunc("59 23 * * *", func() {
 		userManager.ResetDailyUserCount()
 	})
+
 	c.Start()
 	defer c.Stop()
 

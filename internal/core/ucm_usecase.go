@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bondzai/portfolio-backend/internal/interfaces"
+	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -15,10 +15,10 @@ type Manager struct {
 	activeUsers int
 	totalUsers  int
 	mutex       sync.Mutex
-	dbClient    interfaces.MongoDBClientInterface
+	dbClient    repository.MongoDBClientInterface
 }
 
-func NewManager(dbClient interfaces.MongoDBClientInterface) *Manager {
+func NewManager(dbClient repository.MongoDBClientInterface) *Manager {
 	return &Manager{
 		dbClient: dbClient,
 	}
@@ -92,7 +92,7 @@ func (m *Manager) ResetDailyUserCount() {
 	totalUsers := m.totalUsers
 	m.totalUsers = 0
 
-	m.dbClient.SetDataToMongo(&interfaces.User{
+	m.dbClient.SetDataToMongo(&repository.User{
 		Time:       time.Now(),
 		TotalUsers: totalUsers,
 	})
