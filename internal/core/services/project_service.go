@@ -5,16 +5,16 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/core/ports"
 )
 
-type ProjectService struct {
+type projectService struct {
 	repo ports.ProjectRepo
 }
 
-func NewProjectService(repo ports.ProjectRepo) *ProjectService {
-	return &ProjectService{
+func NewProjectService(repo ports.ProjectRepo) *projectService {
+	return &projectService{
 		repo: repo,
 	}
 }
 
-func (m *ProjectService) ReadProjects() ([]*models.Project, error) {
+func (m *projectService) ReadProjects() ([]*models.Project, error) {
 	return m.repo.ReadProjects()
 }
