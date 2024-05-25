@@ -5,16 +5,16 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/core/ports"
 )
 
-type SkillService struct {
+type skillService struct {
 	repo ports.SkillRepo
 }
 
-func NewSkillService(repo ports.SkillRepo) *SkillService {
-	return &SkillService{
+func NewSkillService(repo ports.SkillRepo) *skillService {
+	return &skillService{
 		repo: repo,
 	}
 }
 
-func (m *SkillService) ReadSkills() ([]*models.Skill, error) {
+func (m *skillService) ReadSkills() ([]*models.Skill, error) {
 	return m.repo.ReadSkills()
 }

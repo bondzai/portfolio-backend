@@ -5,16 +5,16 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/core/ports"
 )
 
-type CertService struct {
+type certService struct {
 	repo ports.CertRepo
 }
 
-func NewCertService(repo ports.CertRepo) *CertService {
-	return &CertService{
+func NewCertService(repo ports.CertRepo) *certService {
+	return &certService{
 		repo: repo,
 	}
 }
 
-func (m *CertService) ReadCerts() ([]*models.Certification, error) {
+func (m *certService) ReadCerts() ([]*models.Certification, error) {
 	return m.repo.ReadCerts()
 }

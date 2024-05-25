@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"flag"
+	"fmt"
 	"log"
 	"os"
+	"time"
 
+	"github.com/bondzai/gogear/toolbox"
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
 	"github.com/bondzai/portfolio-backend/internal/core/models"
@@ -17,16 +22,43 @@ import (
 )
 
 func main() {
+	startCronFlag := flag.Bool("cron", false, "Start Cronjob flag")
+	flag.Parse()
+
 	app := fiber.New()
 
 	configureCORS(app)
+
+	repo := repository.NewMock()
 
 	mongoClient := initMongoDB()
 	userManager := usecases.NewManager(mongoClient)
 
 	setupWebSocketRoutes(app, userManager)
-	setupAPIRoutes(app)
-	startCronJob(userManager)
+	setupAPIRoutes(app, repo)
+
+	if *startCronFlag {
+		startCronJob(userManager)
+	}
+
+	cleanup := func() error {
+		err := app.Shutdown()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	err := toolbox.GracefulShutdown(
+		context.Background(),
+		cleanup,
+		5*time.Second,
+	)
+	if err != nil {
+		fmt.Printf("Graceful shutdown error: %v\n", err)
+	} else {
+		fmt.Println("Graceful shutdown completed successfully.")
+	}
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
@@ -58,9 +90,7 @@ func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
 	app.Get("/ws", websocket.New(userManager.HandleConnection))
 }
 
-func setupAPIRoutes(app *fiber.App) {
-	var repo = repository.NewMock()
-
+func setupAPIRoutes(app *fiber.App, repo *repository.MockRepository) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Ok")
 	})
