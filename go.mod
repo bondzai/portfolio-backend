@@ -1,8 +1,9 @@
 module github.com/bondzai/portfolio-backend
 
-go 1.21.5
+go 1.22.2
 
 require (
+	github.com/bondzai/gogear v0.0.0-20240525052351-b636aad3969d
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/influxdata/influxdb-client-go/v2 v2.13.0
 	github.com/joho/godotenv v1.5.1
