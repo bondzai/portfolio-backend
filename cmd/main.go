@@ -21,11 +21,13 @@ func main() {
 
 	configureCORS(app)
 
+	repo := repository.NewMock()
+
 	mongoClient := initMongoDB()
 	userManager := usecases.NewManager(mongoClient)
 
 	setupWebSocketRoutes(app, userManager)
-	setupAPIRoutes(app)
+	setupAPIRoutes(app, repo)
 	startCronJob(userManager)
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
@@ -58,9 +60,7 @@ func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
 	app.Get("/ws", websocket.New(userManager.HandleConnection))
 }
 
-func setupAPIRoutes(app *fiber.App) {
-	var repo = repository.NewMock()
-
+func setupAPIRoutes(app *fiber.App, repo *repository.MockRepository) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Ok")
 	})
