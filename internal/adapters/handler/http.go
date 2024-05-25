@@ -6,17 +6,30 @@ import (
 )
 
 type httpHandler struct {
-	service ports.CertService
+	cs ports.CertService
+	ps ports.ProjectService
+	ss ports.SkillService
 }
 
-func NewHttpHandler(service ports.CertService) *httpHandler {
+func NewHttpHandler(cs ports.CertService, ps ports.ProjectService, ss ports.SkillService) *httpHandler {
 	return &httpHandler{
-		service: service,
+		cs: cs,
+		ps: ps,
+		ss: ss,
 	}
 }
 
 func (h *httpHandler) GetCerts(c *fiber.Ctx) error {
-	data, err := h.service.ReadCerts()
+	data, err := h.cs.ReadCerts()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.JSON(data)
+}
+
+func (h *httpHandler) GetSkills(c *fiber.Ctx) error {
+	data, err := h.ss.ReadSkills()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
