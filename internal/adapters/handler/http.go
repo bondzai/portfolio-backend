@@ -36,3 +36,12 @@ func (h *httpHandler) GetSkills(c *fiber.Ctx) error {
 
 	return c.JSON(data)
 }
+
+func (h *httpHandler) GetProjects(c *fiber.Ctx) error {
+	data, err := h.ps.ReadProjects()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.JSON(data)
+}
