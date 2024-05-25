@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -17,6 +18,9 @@ import (
 )
 
 func main() {
+	startCronFlag := flag.Bool("cron", false, "Start Cronjob flag")
+	flag.Parse()
+
 	app := fiber.New()
 
 	configureCORS(app)
@@ -28,7 +32,10 @@ func main() {
 
 	setupWebSocketRoutes(app, userManager)
 	setupAPIRoutes(app, repo)
-	startCronJob(userManager)
+
+	if *startCronFlag {
+		startCronJob(userManager)
+	}
 
 	app.Listen(":" + os.Getenv("GO_PORT"))
 }
