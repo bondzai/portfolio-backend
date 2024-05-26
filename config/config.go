@@ -1,6 +1,8 @@
 package config
 
 import (
+	"flag"
+
 	"github.com/spf13/viper"
 )
 
@@ -19,7 +21,15 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	viper.SetConfigFile(".env")
+	debugFlag := flag.Bool("debug", false, "Start Debug flag")
+	flag.Parse()
+
+	if *debugFlag {
+		viper.SetConfigFile(".env")
+	} else {
+		viper.AutomaticEnv()
+	}
+
 	viper.ReadInConfig()
 
 	return &Config{
