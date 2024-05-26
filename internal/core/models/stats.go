@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/bondzai/portfolio-backend/internal/utils"
+	"github.com/bondzai/portfolio-backend/config"
 	"github.com/valyala/fasthttp"
 )
 
-var apiUrl = utils.GetEnv("GO_WAKATIME_URL", "https://wakatime.com/api/v1/users/current/stats/all_time")
-var apiKey = utils.GetEnv("GO_WAKATIME_API_KEY", "")
+var conf = config.GetConfig()
 
 func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	cleanedData := make([]map[string]interface{}, newLastIndex+1)
@@ -61,8 +60,8 @@ func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 
 func FetchDataFromAPI() (map[string]interface{}, error) {
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(apiUrl)
-	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(apiKey)))
+	req.SetRequestURI(conf.WakaUrl)
+	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(conf.WakaApiKey)))
 
 	resp := fasthttp.AcquireResponse()
 	if err := fasthttp.Do(req, resp); err != nil {

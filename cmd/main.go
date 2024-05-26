@@ -1,14 +1,10 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"log"
-	"os"
-	"time"
 
-	"github.com/bondzai/gogear/toolbox"
+	"github.com/bondzai/portfolio-backend/config"
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
 	"github.com/bondzai/portfolio-backend/internal/core/models"
@@ -20,6 +16,8 @@ import (
 
 	"github.com/robfig/cron/v3"
 )
+
+var conf = config.GetConfig()
 
 func main() {
 	startCronFlag := flag.Bool("cron", false, "Start Cronjob flag")
@@ -41,33 +39,14 @@ func main() {
 		startCronJob(userManager)
 	}
 
-	cleanup := func() error {
-		err := app.Shutdown()
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	err := toolbox.GracefulShutdown(
-		context.Background(),
-		cleanup,
-		5*time.Second,
-	)
-	if err != nil {
-		fmt.Printf("Graceful shutdown error: %v\n", err)
-	} else {
-		fmt.Println("Graceful shutdown completed successfully.")
-	}
-
-	app.Listen(":" + os.Getenv("GO_PORT"))
+	app.Listen(":" + conf.Port)
 }
 
 func initMongoDB() repository.MongoDBClientInterface {
 	mongoClient, err := repository.NewMongoDBClient(
-		os.Getenv("GO_MONGODB_URL"),
-		os.Getenv("GO_MONGODB_DB"),
-		os.Getenv("GO_MONGODB_COL"),
+		conf.MongoUrl,
+		conf.MongoDB,
+		conf.MongoCol,
 	)
 
 	if err != nil {
@@ -79,8 +58,8 @@ func initMongoDB() repository.MongoDBClientInterface {
 
 func configureCORS(app *fiber.App) {
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     os.Getenv("GO_CORS_ORIGINS"),
-		AllowHeaders:     os.Getenv("GO_CORS_HEADERS"),
+		AllowOrigins:     conf.CorsOrigin,
+		AllowHeaders:     conf.CorsHeader,
 		ExposeHeaders:    "Content-Length",
 		AllowCredentials: false,
 	}))
