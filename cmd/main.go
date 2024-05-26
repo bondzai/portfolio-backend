@@ -1,10 +1,8 @@
 package main
 
 import (
-	"flag"
 	"log"
 
-	"github.com/bondzai/gogear/toolbox"
 	"github.com/bondzai/portfolio-backend/config"
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
@@ -21,14 +19,6 @@ import (
 var conf = config.GetConfig()
 
 func main() {
-	startCronFlag := flag.Bool("cron", false, "Start Cronjob flag")
-	debugFlag := flag.Bool("debug", false, "Start Debug flag")
-	flag.Parse()
-
-	if *debugFlag {
-		toolbox.PPrint(conf)
-	}
-
 	app := fiber.New()
 
 	configureCORS(app)
@@ -41,9 +31,7 @@ func main() {
 	setupWebSocketRoutes(app, userManager)
 	setupAPIRoutes(app, repo)
 
-	if *startCronFlag {
-		startCronJob(userManager)
-	}
+	startCronJob(userManager)
 
 	app.Listen(":" + conf.Port)
 }
