@@ -21,10 +21,10 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	debugFlag := flag.Bool("debug", false, "Start Debug flag")
+	devFlag := flag.Bool("dev", false, "Start Dev flag")
 	flag.Parse()
 
-	if *debugFlag {
+	if *devFlag {
 		viper.SetConfigFile(".env")
 	} else {
 		viper.AutomaticEnv()
