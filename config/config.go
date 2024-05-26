@@ -38,7 +38,7 @@ func NewConfig() *Config {
 		CorsMethod: viper.GetString("GO_CORS_METHOD"),
 		CorsOrigin: viper.GetString("GO_CORS_ORIGIN"),
 		WakaApiKey: viper.GetString("GO_WAKATIME_API_KEY"),
-		WakaUrl:    viper.GetString("GO_WAKATIME_API_KEY"),
+		WakaUrl:    viper.GetString("GO_WAKATIME_URL"),
 		MongoUrl:   viper.GetString("GO_MONGODB_URL"),
 		MongoDB:    viper.GetString("GO_MONGODB_DB"),
 		MongoCol:   viper.GetString("GO_MONGODB_COL"),

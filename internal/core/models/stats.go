@@ -77,7 +77,7 @@ func FetchDataFromAPI() (map[string]interface{}, error) {
 		"human_readable_range":                          response["data"].(map[string]interface{})["human_readable_range"],
 		"days_including_holidays":                       response["data"].(map[string]interface{})["days_including_holidays"],
 		"human_readable_total_including_other_language": response["data"].(map[string]interface{})["human_readable_total_including_other_language"],
-		"operating_systems":                             cleanData(response["data"].(map[string]interface{})["operating_systems"].([]interface{}), 4),
+		"operating_systems":                             cleanData(response["data"].(map[string]interface{})["operating_systems"].([]interface{}), 3),
 		"editors":                                       cleanData(response["data"].(map[string]interface{})["editors"].([]interface{}), 2),
 		"languages":                                     cleanData(response["data"].(map[string]interface{})["languages"].([]interface{}), 3),
 		"best_day":                                      response["data"].(map[string]interface{})["best_day"],
