@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
+	"github.com/bondzai/gogear/toolbox"
 	"github.com/bondzai/portfolio-backend/config"
 	repository "github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	usecases "github.com/bondzai/portfolio-backend/internal/core"
-	"github.com/bondzai/portfolio-backend/internal/core/models"
 	"github.com/bondzai/portfolio-backend/internal/core/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,10 +16,12 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-var conf = config.GetConfig()
+var cfg = config.LoadConfig()
 
 func main() {
 	app := fiber.New()
+
+	toolbox.PPrint(cfg)
 
 	configureCORS(app)
 
@@ -33,14 +35,14 @@ func main() {
 
 	startCronJob(userManager)
 
-	app.Listen(":" + conf.Port)
+	app.Listen(":" + cfg.Port)
 }
 
 func initMongoDB() repository.MongoDBClientInterface {
 	mongoClient, err := repository.NewMongoDBClient(
-		conf.MongoUrl,
-		conf.MongoDB,
-		conf.MongoCol,
+		cfg.MongoUrl,
+		cfg.MongoDB,
+		cfg.MongoCol,
 	)
 
 	if err != nil {
@@ -52,10 +54,10 @@ func initMongoDB() repository.MongoDBClientInterface {
 
 func configureCORS(app *fiber.App) {
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     conf.CorsOrigin,
-		AllowHeaders:     conf.CorsHeader,
-		ExposeHeaders:    "Content-Length",
 		AllowCredentials: false,
+		AllowOrigins:     cfg.CorsOrigin,
+		AllowHeaders:     cfg.CorsHeader,
+		ExposeHeaders:    "Content-Length",
 	}))
 }
 
@@ -84,7 +86,8 @@ func setupAPIRoutes(app *fiber.App, repo *repository.MockRepository) {
 	})
 
 	app.Get("/wakatime", func(c *fiber.Ctx) error {
-		return c.JSON(models.Wakatime)
+		res, _ := services.NewStatService().FetchDataFromAPI()
+		return c.JSON(res)
 	})
 }
 

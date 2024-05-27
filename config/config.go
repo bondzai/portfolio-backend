@@ -1,54 +1,62 @@
 package config
 
 import (
-	"flag"
+	"log"
+	"sync"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Port       string
-	CorsHeader string
-	CorsMethod string
-	CorsOrigin string
-	WakaApiKey string
-	WakaUrl    string
-	MongoUrl   string
-	MongoDB    string
-	MongoCol   string
-	DevToken   string
-	ExtraToken string
+	Port       string `mapstructure:"PORT"`
+	CorsHeader string `mapstructure:"CORS_HEADERS"`
+	CorsMethod string `mapstructure:"CORS_METHOD"`
+	CorsOrigin string `mapstructure:"CORS_ORIGIN"`
+	WakaApiKey string `mapstructure:"WAKATIME_API_KEY"`
+	WakaUrl    string `mapstructure:"WAKATIME_URL"`
+	MongoUrl   string `mapstructure:"MONGODB_URL"`
+	MongoDB    string `mapstructure:"MONGODB_DB"`
+	MongoCol   string `mapstructure:"MONGODB_COL"`
+	DevToken   string `mapstructure:"DEV_TOKEN"`
+	ExtraToken string `mapstructure:"EXTRA_TOKEN"`
 }
 
-func NewConfig() *Config {
-	devFlag := flag.Bool("dev", false, "Start Dev flag")
-	flag.Parse()
+func setDefaults() {
+	viper.SetDefault("PORT", "10000")
+	viper.SetDefault("CORS_HEADERS", "*")
+	viper.SetDefault("CORS_METHOD", "*")
+	viper.SetDefault("CORS_ORIGIN", "*")
+	viper.SetDefault("WAKATIME_API_KEY", "")
+	viper.SetDefault("WAKATIME_URL", "")
+	viper.SetDefault("MONGODB_URL", "")
+	viper.SetDefault("MONGODB_DB", "")
+	viper.SetDefault("MONGODB_COL", "")
+	viper.SetDefault("DEV_TOKEN", "")
+	viper.SetDefault("EXTRA_TOKEN", "")
+}
 
-	if *devFlag {
-		viper.SetConfigFile(".env")
-	} else {
+var (
+	cfg  *Config
+	once sync.Once
+)
+
+func LoadConfig() *Config {
+	once.Do(func() {
+		setDefaults()
+
+		viper.SetConfigName("config")
+		viper.SetConfigType("yaml")
+		viper.AddConfigPath("./config")
 		viper.AutomaticEnv()
-	}
 
-	viper.ReadInConfig()
+		if err := viper.ReadInConfig(); err != nil {
+			log.Printf("Error reading config file, %s", err)
+		}
 
-	return &Config{
-		Port:       viper.GetString("GO_PORT"),
-		CorsHeader: viper.GetString("GO_CORS_HEADERS"),
-		CorsMethod: viper.GetString("GO_CORS_METHOD"),
-		CorsOrigin: viper.GetString("GO_CORS_ORIGIN"),
-		WakaApiKey: viper.GetString("GO_WAKATIME_API_KEY"),
-		WakaUrl:    viper.GetString("GO_WAKATIME_URL"),
-		MongoUrl:   viper.GetString("GO_MONGODB_URL"),
-		MongoDB:    viper.GetString("GO_MONGODB_DB"),
-		MongoCol:   viper.GetString("GO_MONGODB_COL"),
-		DevToken:   viper.GetString("GO_DEV_TOKEN"),
-		ExtraToken: viper.GetString("GO_EXTRA_TOKEN"),
-	}
-}
+		if err := viper.Unmarshal(&cfg); err != nil {
+			log.Fatalf("Unable to decode into struct, %v", err)
+		}
+	})
 
-var conf = NewConfig()
-
-func GetConfig() *Config {
-	return conf
+	return cfg
 }
