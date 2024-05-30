@@ -2,12 +2,13 @@ package config
 
 import (
 	"log"
+	"reflect"
 	"sync"
 
 	"github.com/spf13/viper"
 )
 
-type Config struct {
+type config struct {
 	Port       string `mapstructure:"PORT"`
 	CorsHeader string `mapstructure:"CORS_HEADERS"`
 	CorsMethod string `mapstructure:"CORS_METHOD"`
@@ -21,42 +22,42 @@ type Config struct {
 	ExtraToken string `mapstructure:"EXTRA_TOKEN"`
 }
 
-func setDefaults() {
-	viper.SetDefault("PORT", "10000")
-	viper.SetDefault("CORS_HEADERS", "*")
-	viper.SetDefault("CORS_METHOD", "*")
-	viper.SetDefault("CORS_ORIGIN", "*")
-	viper.SetDefault("WAKATIME_API_KEY", "")
-	viper.SetDefault("WAKATIME_URL", "")
-	viper.SetDefault("MONGODB_URL", "")
-	viper.SetDefault("MONGODB_DB", "")
-	viper.SetDefault("MONGODB_COL", "")
-	viper.SetDefault("DEV_TOKEN", "")
-	viper.SetDefault("EXTRA_TOKEN", "")
-}
-
 var (
-	cfg  *Config
+	cfg  *config
 	once sync.Once
 )
 
-func LoadConfig() *Config {
+func LoadConfig() *config {
 	once.Do(func() {
-		setDefaults()
-
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath("./config")
 		viper.AutomaticEnv()
 
+		cfg = &config{}
+		setDefaults(cfg)
+
 		if err := viper.ReadInConfig(); err != nil {
 			log.Printf("Error reading config file, %s", err)
 		}
 
-		if err := viper.Unmarshal(&cfg); err != nil {
+		if err := viper.Unmarshal(cfg); err != nil {
 			log.Fatalf("Unable to decode into struct, %v", err)
 		}
 	})
 
 	return cfg
+}
+
+// setDefaults sets default values in Viper based on struct tags
+func setDefaults(cfg *config) {
+	elem := reflect.TypeOf(cfg).Elem()
+	for i := 0; i < elem.NumField(); i++ {
+		field := elem.Field(i)
+		defaultValue := field.Tag.Get("default")
+
+		if defaultValue != "" {
+			viper.SetDefault(field.Tag.Get("mapstructure"), defaultValue)
+		}
+	}
 }
