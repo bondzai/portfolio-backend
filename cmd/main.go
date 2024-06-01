@@ -22,7 +22,7 @@ func runSeed() {
 	mongoRepo := initMongoDB()
 
 	certifications, _ := mockRepo.ReadCerts()
-	mongoRepo.InsertCertifications("certifications", certifications)
+	mongoRepo.InsertMany("certifications", utils.ConvertToInterfaceSlice(certifications))
 	log.Println("Successfully seeded certifications data to MongoDB")
 
 	projects, _ := mockRepo.ReadProjects()
