@@ -12,7 +12,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-type wsService struct {
+type WsService struct {
 	connections []*websocket.Conn
 	activeUsers int
 	totalUsers  int
@@ -20,47 +20,34 @@ type wsService struct {
 	dbClient    repository.MongoDBClientInterface
 }
 
-func NewWsService(dbClient repository.MongoDBClientInterface) *wsService {
-	return &wsService{
+func NewWsService(dbClient repository.MongoDBClientInterface) *WsService {
+	return &WsService{
 		dbClient: dbClient,
 	}
 }
 
-func (m *wsService) HandleConnection(c *websocket.Conn) {
-	m.addConnection(c)
-	defer m.removeConnection(c)
+func (s *WsService) AddConnection(c *websocket.Conn) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	for {
-		_, _, err := c.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			break
-		}
-	}
+	s.connections = append(s.connections, c)
+	s.totalUsers++
+	s.activeUsers = len(s.connections)
+	s.updateUserCount()
 }
 
-func (m *wsService) addConnection(c *websocket.Conn) {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
+func (s *WsService) RemoveConnection(c *websocket.Conn) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	m.connections = append(m.connections, c)
-	m.totalUsers++
-	m.activeUsers = len(m.connections)
-	m.updateUserCount()
-}
-
-func (m *wsService) removeConnection(c *websocket.Conn) {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
-
-	for i, conn := range m.connections {
+	for i, conn := range s.connections {
 		if conn == c {
-			m.connections = append(m.connections[:i], m.connections[i+1:]...)
+			s.connections = append(s.connections[:i], s.connections[i+1:]...)
 			break
 		}
 	}
-	m.activeUsers = len(m.connections)
-	m.updateUserCount()
+	s.activeUsers = len(s.connections)
+	s.updateUserCount()
 }
 
 type usageCount struct {
@@ -68,10 +55,10 @@ type usageCount struct {
 	TotalUsers  int `json:"totalUsers"`
 }
 
-func (m *wsService) updateUserCount() {
+func (s *WsService) updateUserCount() {
 	data := usageCount{
-		ActiveUsers: m.activeUsers,
-		TotalUsers:  m.totalUsers,
+		ActiveUsers: s.activeUsers,
+		TotalUsers:  s.totalUsers,
 	}
 
 	message, err := json.Marshal(data)
@@ -80,31 +67,31 @@ func (m *wsService) updateUserCount() {
 		return
 	}
 
-	for _, conn := range m.connections {
+	for _, conn := range s.connections {
 		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
 			log.Println("Error writing message:", err)
 		}
 	}
 }
 
-func (m *wsService) resetDailyUserCount() {
-	m.mutex.Lock()
-	defer m.mutex.Unlock()
+func (s *WsService) resetDailyUserCount() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	totalUsers := m.totalUsers
-	m.totalUsers = 0
+	totalUsers := s.totalUsers
+	s.totalUsers = 0
 
-	m.dbClient.SetDataToMongo(&models.TotalUsers{
+	s.dbClient.SetDataToMongo(&models.TotalUsers{
 		Time:       time.Now(),
 		TotalUsers: totalUsers,
 	})
 }
 
-func (m *wsService) StartCronJob() {
+func (s *WsService) StartCronJob() {
 	c := cron.New()
 
 	c.AddFunc("59 23 * * *", func() {
-		m.resetDailyUserCount()
+		s.resetDailyUserCount()
 	})
 
 	c.Start()

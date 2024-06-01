@@ -25,15 +25,16 @@ func main() {
 	projectService := services.NewProjectService(mockRepo)
 	skillService := services.NewSkillService(mockRepo)
 	wakaService := services.NewStatService()
+	websocketService := services.NewWsService(mongoReo)
 
-	wsSerivce := services.NewWsService(mongoReo)
-
-	handler := handler.NewHttpHandler(
+	restHandler := handler.NewHttpHandler(
 		certService,
 		projectService,
 		skillService,
 		wakaService,
 	)
+
+	websocketHandler := handler.NewWsHandler(websocketService)
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: false,
@@ -42,15 +43,15 @@ func main() {
 		ExposeHeaders:    "Content-Length",
 	}))
 
-	app.Get("/", handler.HealthCheck)
-	app.Get("/certifications", handler.GetCerts)
-	app.Get("/projects", handler.GetProjects)
-	app.Get("/skills", handler.GetSkills)
-	app.Get("/wakatime", handler.GetWakaStats)
+	app.Get("/", restHandler.HealthCheck)
+	app.Get("/certifications", restHandler.GetCerts)
+	app.Get("/projects", restHandler.GetProjects)
+	app.Get("/skills", restHandler.GetSkills)
+	app.Get("/wakatime", restHandler.GetWakaStats)
 
-	app.Get("/ws", websocket.New(wsSerivce.HandleConnection))
+	app.Get("/ws", websocket.New(websocketHandler.HandleConnection))
 
-	wsSerivce.StartCronJob()
+	websocketService.StartCronJob()
 
 	app.Listen(":" + cfg.Port)
 }
