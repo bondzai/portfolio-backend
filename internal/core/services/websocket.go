@@ -63,13 +63,13 @@ func (m *wsService) removeConnection(c *websocket.Conn) {
 	m.updateUserCount()
 }
 
-type UsageCount struct {
+type usageCount struct {
 	ActiveUsers int `json:"activeUsers"`
 	TotalUsers  int `json:"totalUsers"`
 }
 
 func (m *wsService) updateUserCount() {
-	data := UsageCount{
+	data := usageCount{
 		ActiveUsers: m.activeUsers,
 		TotalUsers:  m.totalUsers,
 	}
@@ -87,7 +87,7 @@ func (m *wsService) updateUserCount() {
 	}
 }
 
-func (m *wsService) ResetDailyUserCount() {
+func (m *wsService) resetDailyUserCount() {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -104,7 +104,7 @@ func (m *wsService) StartCronJob() {
 	c := cron.New()
 
 	c.AddFunc("59 23 * * *", func() {
-		m.ResetDailyUserCount()
+		m.resetDailyUserCount()
 	})
 
 	c.Start()
