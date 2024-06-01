@@ -37,12 +37,11 @@ func runSeed() {
 func runServer() {
 	app := fiber.New()
 
-	mockRepo := repository.NewMock()
 	mongoRepo := initMongoDB()
 
-	certService := services.NewCertService(mockRepo)
-	projectService := services.NewProjectService(mockRepo)
-	skillService := services.NewSkillService(mockRepo)
+	certService := services.NewCertService(mongoRepo)
+	projectService := services.NewProjectService(mongoRepo)
+	skillService := services.NewSkillService(mongoRepo)
 	wakaService := services.NewStatService()
 	websocketService := services.NewWsService(mongoRepo)
 
