@@ -11,7 +11,7 @@ import (
 
 type MongoDBClientInterface interface {
 	InsertTotalUsers(collectionName string, data *models.TotalUsers) error
-	InsertCertifications(collectionName string, data []*models.Certification) error
+	InsertMany(collectionName string, data []interface{}) error
 }
 
 type MongoDBClient struct {
@@ -51,18 +51,13 @@ func (mc *MongoDBClient) InsertTotalUsers(collectionName string, data *models.To
 	return nil
 }
 
-func (mc *MongoDBClient) InsertCertifications(collectionName string, data []*models.Certification) error {
+func (mc *MongoDBClient) InsertMany(collectionName string, data []interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	collection := mc.db.Collection(collectionName)
 
-	var docs []interface{}
-	for _, cert := range data {
-		docs = append(docs, cert)
-	}
-
-	_, err := collection.InsertMany(ctx, docs)
+	_, err := collection.InsertMany(ctx, data)
 	if err != nil {
 		return err
 	}
