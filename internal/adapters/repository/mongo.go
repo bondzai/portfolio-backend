@@ -5,28 +5,21 @@ import (
 	"log"
 	"time"
 
+	"github.com/bondzai/portfolio-backend/internal/core/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type User struct {
-	Time       time.Time `json:"time"`
-	TotalUsers int       `json:"total_users"`
-}
-
-// MongoDBClientInterface defines methods required for a MongoDB client.
 type MongoDBClientInterface interface {
-	SetDataToMongo(data *User)
+	SetDataToMongo(data *models.TotalUsers)
 }
 
-// MongoDBClient implements the MongoDBClientInterface.
 type MongoDBClient struct {
 	client *mongo.Client
 	db     *mongo.Database
 	coll   *mongo.Collection
 }
 
-// NewMongoDBClient creates a new MongoDBClient instance.
 func NewMongoDBClient(connectionString, dbName, collectionName string) (*MongoDBClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -39,6 +32,7 @@ func NewMongoDBClient(connectionString, dbName, collectionName string) (*MongoDB
 
 	db := client.Database(dbName)
 	coll := db.Collection(collectionName)
+
 	return &MongoDBClient{
 		client: client,
 		db:     db,
@@ -46,7 +40,7 @@ func NewMongoDBClient(connectionString, dbName, collectionName string) (*MongoDB
 	}, nil
 }
 
-func (mc *MongoDBClient) SetDataToMongo(data *User) {
+func (mc *MongoDBClient) SetDataToMongo(data *models.TotalUsers) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
+	"github.com/bondzai/portfolio-backend/internal/core/models"
 	"github.com/gofiber/websocket/v2"
 	"github.com/robfig/cron/v3"
 )
@@ -93,7 +94,7 @@ func (m *wsService) ResetDailyUserCount() {
 	totalUsers := m.totalUsers
 	m.totalUsers = 0
 
-	m.dbClient.SetDataToMongo(&repository.User{
+	m.dbClient.SetDataToMongo(&models.TotalUsers{
 		Time:       time.Now(),
 		TotalUsers: totalUsers,
 	})
