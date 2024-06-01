@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Certification struct {
 	ID          int    `json:"id"`
 	Description string `json:"description"`
@@ -28,4 +30,9 @@ type Skill struct {
 	Name      string `json:"name"`
 	Topic     string `json:"topic"`
 	URL       string `json:"url"`
+}
+
+type TotalUsers struct {
+	Time       time.Time `json:"time"`
+	TotalUsers int       `json:"total_users"`
 }

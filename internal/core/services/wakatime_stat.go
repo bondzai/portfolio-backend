@@ -1,4 +1,4 @@
-package models
+package services
 
 import (
 	"encoding/base64"
@@ -9,7 +9,12 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-var conf = config.GetConfig()
+type statService struct {
+}
+
+func NewStatService() *statService {
+	return &statService{}
+}
 
 func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	cleanedData := make([]map[string]interface{}, newLastIndex+1)
@@ -58,10 +63,11 @@ func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	return cleanedData
 }
 
-func FetchDataFromAPI() (map[string]interface{}, error) {
+func (s *statService) FetchDataFromAPI() (map[string]interface{}, error) {
+	cfg := config.LoadConfig()
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(conf.WakaUrl)
-	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(conf.WakaApiKey)))
+	req.SetRequestURI(cfg.WakaUrl)
+	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(cfg.WakaApiKey)))
 
 	resp := fasthttp.AcquireResponse()
 	if err := fasthttp.Do(req, resp); err != nil {
@@ -85,5 +91,3 @@ func FetchDataFromAPI() (map[string]interface{}, error) {
 
 	return wakatimeData, nil
 }
-
-var Wakatime, _ = FetchDataFromAPI()

@@ -1,54 +1,62 @@
 package config
 
 import (
-	"flag"
+	"log"
+	"reflect"
+	"sync"
 
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Port       string
-	CorsHeader string
-	CorsMethod string
-	CorsOrigin string
-	WakaApiKey string
-	WakaUrl    string
-	MongoUrl   string
-	MongoDB    string
-	MongoCol   string
-	DevToken   string
-	ExtraToken string
+type config struct {
+	Port       string `mapstructure:"PORT"`
+	CorsHeader string `mapstructure:"CORS_HEADERS"`
+	CorsMethod string `mapstructure:"CORS_METHOD"`
+	CorsOrigin string `mapstructure:"CORS_ORIGIN"`
+	WakaApiKey string `mapstructure:"WAKATIME_API_KEY"`
+	WakaUrl    string `mapstructure:"WAKATIME_URL"`
+	MongoUrl   string `mapstructure:"MONGODB_URL"`
+	MongoDB    string `mapstructure:"MONGODB_DB"`
+	MongoCol   string `mapstructure:"MONGODB_COL"`
+	DevToken   string `mapstructure:"DEV_TOKEN"`
+	ExtraToken string `mapstructure:"EXTRA_TOKEN"`
 }
 
-func NewConfig() *Config {
-	devFlag := flag.Bool("dev", false, "Start Dev flag")
-	flag.Parse()
+var (
+	cfg  *config
+	once sync.Once
+)
 
-	if *devFlag {
-		viper.SetConfigFile(".env")
-	} else {
+func LoadConfig() *config {
+	once.Do(func() {
+		viper.SetConfigName("config")
+		viper.SetConfigType("yaml")
+		viper.AddConfigPath("./config")
 		viper.AutomaticEnv()
-	}
 
-	viper.ReadInConfig()
+		cfg = &config{}
+		setDefaults(cfg)
 
-	return &Config{
-		Port:       viper.GetString("GO_PORT"),
-		CorsHeader: viper.GetString("GO_CORS_HEADERS"),
-		CorsMethod: viper.GetString("GO_CORS_METHOD"),
-		CorsOrigin: viper.GetString("GO_CORS_ORIGIN"),
-		WakaApiKey: viper.GetString("GO_WAKATIME_API_KEY"),
-		WakaUrl:    viper.GetString("GO_WAKATIME_URL"),
-		MongoUrl:   viper.GetString("GO_MONGODB_URL"),
-		MongoDB:    viper.GetString("GO_MONGODB_DB"),
-		MongoCol:   viper.GetString("GO_MONGODB_COL"),
-		DevToken:   viper.GetString("GO_DEV_TOKEN"),
-		ExtraToken: viper.GetString("GO_EXTRA_TOKEN"),
-	}
+		if err := viper.ReadInConfig(); err != nil {
+			log.Printf("Error reading config file, %s", err)
+		}
+
+		if err := viper.Unmarshal(cfg); err != nil {
+			log.Fatalf("Unable to decode into struct, %v", err)
+		}
+	})
+
+	return cfg
 }
 
-var conf = NewConfig()
+func setDefaults(cfg *config) {
+	elem := reflect.TypeOf(cfg).Elem()
+	for i := 0; i < elem.NumField(); i++ {
+		field := elem.Field(i)
+		defaultValue := field.Tag.Get("default")
 
-func GetConfig() *Config {
-	return conf
+		if defaultValue != "" {
+			viper.SetDefault(field.Tag.Get("mapstructure"), defaultValue)
+		}
+	}
 }

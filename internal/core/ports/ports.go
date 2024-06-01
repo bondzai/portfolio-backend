@@ -33,3 +33,13 @@ type (
 		ReadSkills() ([]*models.Skill, error)
 	}
 )
+
+type (
+	WakaService interface {
+		FetchDataFromAPI() (map[string]interface{}, error)
+	}
+
+	WakaRepo interface {
+		FetchDataFromAPI() (map[string]interface{}, error)
+	}
+)
