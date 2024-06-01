@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/bondzai/portfolio-backend/internal/core/models"
@@ -11,16 +10,16 @@ import (
 )
 
 type MongoDBClientInterface interface {
-	SetDataToMongo(data *models.TotalUsers)
+	InsertTotalUsers(collectionName string, data *models.TotalUsers) error
+	InsertCertifications(collectionName string, data []*models.Certification) error
 }
 
 type MongoDBClient struct {
 	client *mongo.Client
 	db     *mongo.Database
-	coll   *mongo.Collection
 }
 
-func NewMongoDBClient(connectionString, dbName, collectionName string) (*MongoDBClient, error) {
+func NewMongoDBClient(connectionString, dbName string) (*MongoDBClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -31,21 +30,42 @@ func NewMongoDBClient(connectionString, dbName, collectionName string) (*MongoDB
 	}
 
 	db := client.Database(dbName)
-	coll := db.Collection(collectionName)
 
 	return &MongoDBClient{
 		client: client,
 		db:     db,
-		coll:   coll,
 	}, nil
 }
 
-func (mc *MongoDBClient) SetDataToMongo(data *models.TotalUsers) {
+func (mc *MongoDBClient) InsertTotalUsers(collectionName string, data *models.TotalUsers) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := mc.coll.InsertOne(ctx, data)
+	collection := mc.db.Collection(collectionName)
+
+	_, err := collection.InsertOne(ctx, data)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
+
+	return nil
+}
+
+func (mc *MongoDBClient) InsertCertifications(collectionName string, data []*models.Certification) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection := mc.db.Collection(collectionName)
+
+	var docs []interface{}
+	for _, cert := range data {
+		docs = append(docs, cert)
+	}
+
+	_, err := collection.InsertMany(ctx, docs)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
