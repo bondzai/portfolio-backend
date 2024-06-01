@@ -1,9 +1,11 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Certification struct {
-	ID          int    `json:"id"`
+	// ID          primitive.ObjectID `bson:"_id" json:"id"`
 	Description string `json:"description"`
 	ImageURL    string `json:"image_url"`
 	Name        string `json:"name"`
@@ -11,8 +13,8 @@ type Certification struct {
 }
 
 type Project struct {
+	// ID          primitive.ObjectID `bson:"_id" json:"id"`
 	HostURL     string `json:"host_url"`
-	ID          int    `json:"id"`
 	ImageURL    string `json:"image_url"`
 	IsHighlight bool   `json:"is_highlight"`
 	IsSleep     bool   `json:"is_sleep"`
@@ -24,7 +26,7 @@ type Project struct {
 }
 
 type Skill struct {
-	ID        int    `json:"id"`
+	// ID        primitive.ObjectID `bson:"_id" json:"id"`
 	ImageURL  string `json:"image_url"`
 	IsShowing bool   `json:"is_showing"`
 	Name      string `json:"name"`
