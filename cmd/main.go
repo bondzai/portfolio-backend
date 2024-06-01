@@ -51,7 +51,7 @@ func main() {
 	app.Get("/skills", handler.GetSkills)
 	app.Get("/wakatime", handler.GetWakaStats)
 
-	setupWebSocketRoutes(app, userManager)
+	app.Get("/ws", websocket.New(userManager.HandleConnection))
 
 	startCronJob(userManager)
 
@@ -70,10 +70,6 @@ func initMongoDB() repository.MongoDBClientInterface {
 	}
 
 	return mongoReo
-}
-
-func setupWebSocketRoutes(app *fiber.App, userManager *usecases.Manager) {
-	app.Get("/ws", websocket.New(userManager.HandleConnection))
 }
 
 func startCronJob(userManager *usecases.Manager) {
