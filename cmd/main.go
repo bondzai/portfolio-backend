@@ -85,15 +85,29 @@ func runSeed() {
 	mockRepo := repository.NewMock()
 	mongoRepo := initMongoDB()
 
+	var err error
+
 	certifications, _ := mockRepo.ReadCerts()
-	mongoRepo.InsertMany("certifications", utils.ConvertToInterfaceSlice(certifications))
-	slog.Info("Successfully seeded certifications data to MongoDB")
+	err = mongoRepo.InsertMany("certifications", utils.ConvertToInterfaceSlice(certifications))
+	if err != nil {
+		slog.Error("Error seeded certifications data", err)
+	} else {
+		slog.Info("Successfully seeded certifications data to MongoDB")
+	}
 
 	projects, _ := mockRepo.ReadProjects()
 	mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
-	slog.Info("Successfully seeded projects data to MongoDB")
+	if err != nil {
+		slog.Error("Error seeded projects data", err)
+	} else {
+		slog.Info("Successfully seeded projects data to MongoDB")
+	}
 
 	skills, _ := mockRepo.ReadSkills()
 	mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(skills))
-	slog.Info("Successfully seeded skills data to MongoDB")
+	if err != nil {
+		slog.Error("Error seeded skills data", err)
+	} else {
+		slog.Info("Successfully seeded skills data to MongoDB")
+	}
 }
