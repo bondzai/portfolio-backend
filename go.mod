@@ -3,7 +3,7 @@ module github.com/bondzai/portfolio-backend
 go 1.22.2
 
 require (
-	github.com/bondzai/gogear v0.0.0-20240525052351-b636aad3969d
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.18.2
@@ -12,6 +12,8 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
