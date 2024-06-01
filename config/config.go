@@ -33,8 +33,6 @@ var (
 
 func LoadConfig() *config {
 	once.Do(func() {
-		viper.SetConfigName("config")
-		viper.SetConfigType("yaml")
 		viper.AutomaticEnv()
 
 		cfg = &config{}
