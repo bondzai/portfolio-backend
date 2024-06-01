@@ -36,6 +36,12 @@ func runSeed() {
 
 func runServer() {
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: false,
+		AllowOrigins:     cfg.CorsOrigin,
+		AllowHeaders:     cfg.CorsHeader,
+		ExposeHeaders:    "Content-Length",
+	}))
 
 	mongoRepo := initMongoDB()
 
@@ -53,13 +59,6 @@ func runServer() {
 	)
 
 	websocketHandler := handler.NewWsHandler(websocketService)
-
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: false,
-		AllowOrigins:     cfg.CorsOrigin,
-		AllowHeaders:     cfg.CorsHeader,
-		ExposeHeaders:    "Content-Length",
-	}))
 
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)
