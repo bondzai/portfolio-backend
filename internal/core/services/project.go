@@ -1,6 +1,8 @@
 package services
 
 import (
+	"slices"
+
 	"github.com/bondzai/portfolio-backend/internal/core/models"
 	"github.com/bondzai/portfolio-backend/internal/core/ports"
 )
@@ -15,6 +17,13 @@ func NewProjectService(repo ports.ProjectRepo) *projectService {
 	}
 }
 
-func (m *projectService) ReadProjects() ([]models.Project, error) {
-	return m.repo.ReadProjects()
+func (s *projectService) ReadProjects() ([]models.Project, error) {
+	data, err := s.repo.ReadProjects()
+	if err != nil {
+		return []models.Project{}, err
+	}
+
+	slices.Reverse(data)
+
+	return data, nil
 }

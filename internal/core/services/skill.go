@@ -15,6 +15,11 @@ func NewSkillService(repo ports.SkillRepo) *skillService {
 	}
 }
 
-func (m *skillService) ReadSkills() ([]models.Skill, error) {
-	return m.repo.ReadSkills()
+func (s *skillService) ReadSkills() ([]models.Skill, error) {
+	data, err := s.repo.ReadSkills()
+	if err != nil {
+		return []models.Skill{}, err
+	}
+
+	return data, nil
 }

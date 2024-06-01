@@ -1,6 +1,8 @@
 package services
 
 import (
+	"slices"
+
 	"github.com/bondzai/portfolio-backend/internal/core/models"
 	"github.com/bondzai/portfolio-backend/internal/core/ports"
 )
@@ -15,6 +17,13 @@ func NewCertService(repo ports.CertRepo) *certService {
 	}
 }
 
-func (m *certService) ReadCerts() ([]models.Certification, error) {
-	return m.repo.ReadCerts()
+func (s *certService) ReadCerts() ([]models.Certification, error) {
+	data, err := s.repo.ReadCerts()
+	if err != nil {
+		return []models.Certification{}, err
+	}
+
+	slices.Reverse(data)
+
+	return data, nil
 }
