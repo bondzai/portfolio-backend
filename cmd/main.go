@@ -1,12 +1,14 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/bondzai/portfolio-backend/config"
 	"github.com/bondzai/portfolio-backend/internal/adapters/handler"
 	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	"github.com/bondzai/portfolio-backend/internal/core/services"
+	"github.com/bondzai/portfolio-backend/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -15,17 +17,34 @@ import (
 
 var cfg = config.LoadConfig()
 
-func main() {
+func runSeed() {
+	mockRepo := repository.NewMock()
+	mongoRepo := initMongoDB()
+
+	certifications, _ := mockRepo.ReadCerts()
+	mongoRepo.InsertCertifications("certifications", certifications)
+	log.Println("Successfully seeded certifications data to MongoDB")
+
+	projects, _ := mockRepo.ReadProjects()
+	mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
+	log.Println("Successfully seeded projects data to MongoDB")
+
+	Skills, _ := mockRepo.ReadSkills()
+	mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(Skills))
+	log.Println("Successfully seeded Skills data to MongoDB")
+}
+
+func runServer() {
 	app := fiber.New()
 
 	mockRepo := repository.NewMock()
-	mongoReo := initMongoDB()
+	mongoRepo := initMongoDB()
 
 	certService := services.NewCertService(mockRepo)
 	projectService := services.NewProjectService(mockRepo)
 	skillService := services.NewSkillService(mockRepo)
 	wakaService := services.NewStatService()
-	websocketService := services.NewWsService(mongoReo)
+	websocketService := services.NewWsService(mongoRepo)
 
 	restHandler := handler.NewHttpHandler(
 		certService,
@@ -56,16 +75,26 @@ func main() {
 	app.Listen(":" + cfg.Port)
 }
 
+func main() {
+	seedFlag := flag.Bool("seed", false, "Data seeding.")
+	flag.Parse()
+
+	if *seedFlag {
+		runSeed()
+	} else {
+		runServer()
+	}
+}
+
 func initMongoDB() repository.MongoDBClientInterface {
-	mongoReo, err := repository.NewMongoDBClient(
+	mongoRepo, err := repository.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,
-		cfg.MongoCol,
 	)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	return mongoReo
+	return mongoRepo
 }
