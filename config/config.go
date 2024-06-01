@@ -2,65 +2,54 @@ package config
 
 import (
 	"log"
-	"reflect"
 	"sync"
 
 	"github.com/spf13/viper"
 )
 
 type config struct {
-	Port       string `mapstructure:"PORT"`
-	CorsHeader string `mapstructure:"CORS_HEADERS"`
-	CorsMethod string `mapstructure:"CORS_METHOD"`
-	CorsOrigin string `mapstructure:"CORS_ORIGIN"`
-	WakaApiKey string `mapstructure:"WAKATIME_API_KEY"`
-	WakaUrl    string `mapstructure:"WAKATIME_URL"`
-	MongoUrl   string `mapstructure:"MONGODB_URL"`
-	MongoDB    string `mapstructure:"MONGODB_DB"`
-	MongoCol   string `mapstructure:"MONGODB_COL"`
-	DevToken   string `mapstructure:"DEV_TOKEN"`
-	ExtraToken string `mapstructure:"EXTRA_TOKEN"`
-	RedisUrl   string `mapstructure:"REDIS_URL"`
-	RedisDB    string `mapstructure:"REDIS_DB"`
-	RedisUser  string `mapstructure:"REDIS_USER"`
-	RedisPass  string `mapstructure:"REDIS_PASS"`
+	Port       string
+	CorsHeader string
+	CorsMethod string
+	CorsOrigin string
+	WakaApiKey string
+	WakaUrl    string
+	MongoUrl   string
+	MongoDB    string
+	DevToken   string
+	ExtraToken string
+	RedisUrl   string
+	RedisDb    int
+	RedisUser  string
+	RedisPass  string
 }
 
-var (
-	cfg  *config
-	once sync.Once
-)
+var once sync.Once
 
 func LoadConfig() *config {
 	once.Do(func() {
-		viper.SetConfigName("config")
-		viper.SetConfigType("yaml")
-		viper.AddConfigPath("./config")
+		viper.SetConfigFile(".env")
 		viper.AutomaticEnv()
-
-		cfg = &config{}
-		setDefaults(cfg)
 
 		if err := viper.ReadInConfig(); err != nil {
 			log.Printf("Error reading config file, %s", err)
 		}
-
-		if err := viper.Unmarshal(cfg); err != nil {
-			log.Fatalf("Unable to decode into struct, %v", err)
-		}
 	})
 
-	return cfg
-}
-
-func setDefaults(cfg *config) {
-	elem := reflect.TypeOf(cfg).Elem()
-	for i := 0; i < elem.NumField(); i++ {
-		field := elem.Field(i)
-		defaultValue := field.Tag.Get("default")
-
-		if defaultValue != "" {
-			viper.SetDefault(field.Tag.Get("mapstructure"), defaultValue)
-		}
+	return &config{
+		Port:       viper.GetString("PORT"),
+		CorsHeader: viper.GetString("CORS_HEADERS"),
+		CorsMethod: viper.GetString("CORS_METHOD"),
+		CorsOrigin: viper.GetString("CORS_ORIGIN"),
+		WakaApiKey: viper.GetString("WAKATIME_API_KEY"),
+		WakaUrl:    viper.GetString("WAKATIME_URL"),
+		MongoUrl:   viper.GetString("MONGODB_URL"),
+		MongoDB:    viper.GetString("MONGODB_DB"),
+		DevToken:   viper.GetString("DEV_TOKEN"),
+		ExtraToken: viper.GetString("EXTRA_TOKEN"),
+		RedisUrl:   viper.GetString("REDIS_URL"),
+		RedisDb:    viper.GetInt("REDIS_DB"),
+		RedisUser:  viper.GetString("REDIS_USER"),
+		RedisPass:  viper.GetString("REDIS_PASS"),
 	}
 }
