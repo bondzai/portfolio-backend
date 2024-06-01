@@ -15,6 +15,6 @@ func NewProjectService(repo ports.ProjectRepo) *projectService {
 	}
 }
 
-func (m *projectService) ReadProjects() ([]*models.Project, error) {
+func (m *projectService) ReadProjects() ([]models.Project, error) {
 	return m.repo.ReadProjects()
 }

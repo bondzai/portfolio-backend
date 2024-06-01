@@ -10,66 +10,57 @@ func NewMock() *MockRepository {
 	return &MockRepository{}
 }
 
-func (mr *MockRepository) ReadCerts() ([]*models.Certification, error) {
-	certifications := []*models.Certification{
+func (mr *MockRepository) ReadCerts() ([]models.Certification, error) {
+	certifications := []models.Certification{
 		{
-			ID:          1,
 			Description: "Thin manager",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635443/Portfolio/cirtifications/Cir-Thin.png",
 			Name:        "Thin manager",
 			OtherURL:    "",
 		},
 		{
-			ID:          2,
 			Description: "CSI Intouch",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635441/Portfolio/cirtifications/Cir-CSI.png",
 			Name:        "CSI Intouch",
 			OtherURL:    "",
 		},
 		{
-			ID:          3,
 			Description: "Pre-CCNA",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635442/Portfolio/cirtifications/Cir-Network.jpg",
 			Name:        "Pre-CCNA",
 			OtherURL:    "",
 		},
 		{
-			ID:          4,
 			Description: "DevLab3",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635442/Portfolio/cirtifications/Cir-DevLab.png",
 			Name:        "DevLab3",
 			OtherURL:    "",
 		},
 		{
-			ID:          5,
 			Description: "Backend",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635442/Portfolio/cirtifications/Cir-Udemy-Backend.jpg",
 			Name:        "Backend",
 			OtherURL:    "",
 		},
 		{
-			ID:          6,
 			Description: "Protocols",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635442/Portfolio/cirtifications/Cir-Udemy-Protocols.jpg",
 			Name:        "Protocols",
 			OtherURL:    "",
 		},
 		{
-			ID:          7,
 			Description: "Go",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635442/Portfolio/cirtifications/Cir-Udemy-Backend-Master.jpg",
 			Name:        "Go",
 			OtherURL:    "",
 		},
 		{
-			ID:          8,
 			Description: "ChatGPT",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1689411286/Portfolio/cirtifications/Cir-ChatGPT.png",
 			Name:        "ChatGPT",
 			OtherURL:    "",
 		},
 		{
-			ID:          9,
 			Description: "Apollo GraphQL",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1694930735/Portfolio/cirtifications/Cir-Apollo-Associate.png",
 			Name:        "Apoll-Associate",
@@ -80,11 +71,10 @@ func (mr *MockRepository) ReadCerts() ([]*models.Certification, error) {
 	return certifications, nil
 }
 
-func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
-	projects := []*models.Project{
+func (mr *MockRepository) ReadProjects() ([]models.Project, error) {
+	projects := []models.Project{
 		{
 			HostURL:     "https://introbond-upload.cyclic.app/",
-			ID:          1,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-cloudinary.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -96,7 +86,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://bondzai.github.io/micro-app-quiz/",
-			ID:          2,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-quiz.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -108,7 +97,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://bondzai.github.io/micro-app-todolist/",
-			ID:          3,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634065/Portfolio/project-todolist.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -120,7 +108,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://bondzai.github.io/micro-app-contries-search-filter/",
-			ID:          4,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-contries-info.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -132,7 +119,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://microservice-timestamp.introbond.repl.co",
-			ID:          5,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634065/Portfolio/project-timestamp.png",
 			IsHighlight: false,
 			IsSleep:     true,
@@ -144,7 +130,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://bondzai.github.io/micro-app-simple-calculator/",
-			ID:          6,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-calculator.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -156,7 +141,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://microservice-headerparser.introbond.repl.co/",
-			ID:          7,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-req-parser.png",
 			IsHighlight: false,
 			IsSleep:     true,
@@ -168,7 +152,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://introbond-crypto-ui.onrender.com/",
-			ID:          8,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-hash.png",
 			IsHighlight: false,
 			IsSleep:     true,
@@ -180,7 +163,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://bondzai.github.io/micro-app-api-currency-exchange/",
-			ID:          9,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634065/Portfolio/project-exchange.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -192,7 +174,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://ecommerce.introbond.repl.co/api-docs/",
-			ID:          10,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-ecommerce.png",
 			IsHighlight: false,
 			IsSleep:     true,
@@ -204,7 +185,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://swiftdev.onrender.com/",
-			ID:          11,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1681039500/project-scrum.png",
 			IsHighlight: false,
 			IsSleep:     false,
@@ -216,7 +196,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://apollo-catstronauts-client.vercel.app/",
-			ID:          13,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1694937857/Portfolio/projects/project-cats-client.png",
 			IsHighlight: true,
 			IsSleep:     true,
@@ -228,7 +207,6 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 		},
 		{
 			HostURL:     "https://apollo-catstronauts-server.introbond.repl.co",
-			ID:          14,
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1694937857/Portfolio/projects/project-cats-server.png",
 			IsHighlight: true,
 			IsSleep:     true,
@@ -243,10 +221,9 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 	return projects, nil
 }
 
-func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
-	skills := []*models.Skill{
+func (mr *MockRepository) ReadSkills() ([]models.Skill, error) {
+	skills := []models.Skill{
 		{
-			ID:        1,
 			ImageURL:  "https://www.vectorlogo.zone/logos/golang/golang-icon.svg",
 			IsShowing: true,
 			Name:      "Go",
@@ -254,7 +231,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://go.dev/",
 		},
 		{
-			ID:        2,
 			ImageURL:  "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
 			IsShowing: true,
 			Name:      "JavaScript",
@@ -262,7 +238,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://developer.mozilla.org/en-US/docs/Web/JavaScript/",
 		},
 		{
-			ID:        3,
 			ImageURL:  "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg",
 			IsShowing: false,
 			Name:      "TypeScript",
@@ -270,7 +245,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.typescriptlang.org/",
 		},
 		{
-			ID:        4,
 			ImageURL:  "https://www.vectorlogo.zone/logos/python/python-icon.svg",
 			IsShowing: true,
 			Name:      "Python",
@@ -278,7 +252,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.python.org/",
 		},
 		{
-			ID:        5,
 			ImageURL:  "https://www.vectorlogo.zone/logos/gnu_bash/gnu_bash-icon.svg",
 			IsShowing: true,
 			Name:      "Shell",
@@ -286,7 +259,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.gnu.org/software/bash/",
 		},
 		{
-			ID:        6,
 			ImageURL:  "https://res.cloudinary.com/dbdacfhye/image/upload/v1668240741/Portfolio/skills/PLC.svg",
 			IsShowing: true,
 			Name:      "PLC",
@@ -294,7 +266,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://en.wikipedia.org/wiki/Programmable_logic_controller/",
 		},
 		{
-			ID:        7,
 			ImageURL:  "https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg",
 			IsShowing: true,
 			Name:      "React",
@@ -302,7 +273,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://reactjs.org/",
 		},
 		{
-			ID:        8,
 			ImageURL:  "https://www.gitbook.com/cdn-cgi/image/width=256,height=40,fit=contain,dpr=1,format=auto/https%3A%2F%2F373165937-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fspaces%252F-M-XEvRn3rhe8BDVGkss%252Favatar-rectangle.png%3Fgeneration%3D1582298855816936%26alt%3Dmedia",
 			IsShowing: true,
 			Name:      "Fiber",
@@ -310,7 +280,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://docs.gofiber.io/",
 		},
 		{
-			ID:        9,
 			ImageURL:  "https://www.vectorlogo.zone/logos/nodejs/nodejs-icon.svg",
 			IsShowing: true,
 			Name:      "NodeJS",
@@ -318,7 +287,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://nodejs.org",
 		},
 		{
-			ID:        10,
 			ImageURL:  "https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg",
 			IsShowing: true,
 			Name:      "Express",
@@ -326,7 +294,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://expressjs.com",
 		},
 		{
-			ID:        11,
 			ImageURL:  "https://www.vectorlogo.zone/logos/nestjs/nestjs-icon.svg",
 			IsShowing: false,
 			Name:      "Nest",
@@ -334,7 +301,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://nestjs.com/",
 		},
 		{
-			ID:        12,
 			ImageURL:  "https://www.vectorlogo.zone/logos/djangoproject/djangoproject-icon.svg",
 			IsShowing: true,
 			Name:      "Django",
@@ -342,7 +308,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.djangoproject.com/",
 		},
 		{
-			ID:        13,
 			ImageURL:  "https://cdn.worldvectorlogo.com/logos/fastapi.svg",
 			IsShowing: false,
 			Name:      "Fast",
@@ -350,7 +315,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://fastapi.tiangolo.com/",
 		},
 		{
-			ID:        14,
 			ImageURL:  "https://www.vectorlogo.zone/logos/graphql/graphql-icon.svg",
 			IsShowing: true,
 			Name:      "GraphQL",
@@ -358,7 +322,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://graphql.org/",
 		},
 		{
-			ID:        15,
 			ImageURL:  "https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg",
 			IsShowing: true,
 			Name:      "PostreSQL",
@@ -366,7 +329,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.postgresql.org/",
 		},
 		{
-			ID:        16,
 			ImageURL:  "https://www.vectorlogo.zone/logos/mysql/mysql-icon.svg",
 			IsShowing: true,
 			Name:      "MySQL",
@@ -374,7 +336,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.mysql.com/",
 		},
 		{
-			ID:        17,
 			ImageURL:  "https://img.icons8.com/color/96/microsoft-sql-server.png",
 			IsShowing: true,
 			Name:      "SQLServer",
@@ -382,7 +343,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.microsoft.com/en-us/sql-server/sql-server-downloads",
 		},
 		{
-			ID:        18,
 			ImageURL:  "https://www.vectorlogo.zone/logos/influxdata/influxdata-icon.svg",
 			IsShowing: true,
 			Name:      "Influx",
@@ -390,7 +350,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.influxdata.com/",
 		},
 		{
-			ID:        19,
 			ImageURL:  "https://www.vectorlogo.zone/logos/mongodb/mongodb-icon.svg",
 			IsShowing: true,
 			Name:      "Mongo",
@@ -398,7 +357,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.mongodb.com/",
 		},
 		{
-			ID:        20,
 			ImageURL:  "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
 			IsShowing: false,
 			Name:      "Firebase",
@@ -406,7 +364,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://firebase.google.com/",
 		},
 		{
-			ID:        22,
 			ImageURL:  "https://www.vectorlogo.zone/logos/redis/redis-icon.svg",
 			IsShowing: true,
 			Name:      "Redis",
@@ -414,7 +371,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://redis.io/",
 		},
 		{
-			ID:        23,
 			ImageURL:  "https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg",
 			IsShowing: true,
 			Name:      "Git",
@@ -422,7 +378,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://git-scm.com/",
 		},
 		{
-			ID:        24,
 			ImageURL:  "https://www.vectorlogo.zone/logos/github/github-icon.svg",
 			IsShowing: true,
 			Name:      "GitHub",
@@ -430,7 +385,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://github.com/",
 		},
 		{
-			ID:        25,
 			ImageURL:  "https://upload.wikimedia.org/wikipedia/commons/9/9a/Vmware.svg",
 			IsShowing: true,
 			Name:      "VMware",
@@ -438,7 +392,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.vmware.com/",
 		},
 		{
-			ID:        26,
 			ImageURL:  "https://www.vectorlogo.zone/logos/docker/docker-icon.svg",
 			IsShowing: true,
 			Name:      "Docker",
@@ -446,7 +399,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.docker.com/",
 		},
 		{
-			ID:        28,
 			ImageURL:  "https://www.vectorlogo.zone/logos/replit/replit-icon.svg",
 			IsShowing: true,
 			Name:      "Replit",
@@ -454,7 +406,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://replit.com/",
 		},
 		{
-			ID:        30,
 			ImageURL:  "https://www.vectorlogo.zone/logos/rabbitmq/rabbitmq-icon.svg",
 			IsShowing: true,
 			Name:      "RabbitMQ",
@@ -462,7 +413,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.rabbitmq.com/",
 		},
 		{
-			ID:        33,
 			ImageURL:  "https://www.vectorlogo.zone/logos/grafana/grafana-icon.svg",
 			IsShowing: true,
 			Name:      "Grafana",
@@ -470,7 +420,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://grafana.com/",
 		},
 		{
-			ID:        35,
 			ImageURL:  "https://www.vectorlogo.zone/logos/virtualbox/virtualbox-icon.svg",
 			IsShowing: true,
 			Name:      "Virtualbox",
@@ -478,7 +427,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.virtualbox.org/",
 		},
 		{
-			ID:        37,
 			ImageURL:  "https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg",
 			IsShowing: true,
 			Name:      "Ubuntu",
@@ -486,7 +434,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://ubuntu.com/",
 		},
 		{
-			ID:        38,
 			ImageURL:  "https://www.vectorlogo.zone/logos/archlinux/archlinux-icon.svg",
 			IsShowing: true,
 			Name:      "Arch",
@@ -494,7 +441,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://archlinux.org/",
 		},
 		{
-			ID:        39,
 			ImageURL:  "https://www.vectorlogo.zone/logos/debian/debian-icon.svg",
 			IsShowing: true,
 			Name:      "Debian",
@@ -502,7 +448,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.debian.org/",
 		},
 		{
-			ID:        40,
 			ImageURL:  "https://www.vectorlogo.zone/logos/raspberrypi/raspberrypi-icon.svg",
 			IsShowing: true,
 			Name:      "RaspberryPi",
@@ -510,7 +455,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.raspberrypi.com/software/",
 		},
 		{
-			ID:        42,
 			ImageURL:  "https://www.vectorlogo.zone/logos/arduino/arduino-icon.svg",
 			IsShowing: true,
 			Name:      "Arduino",
@@ -518,7 +462,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.arduino.cc/",
 		},
 		{
-			ID:        43,
 			ImageURL:  "https://symbols-electrical.getvecta.com/stencil_262/71_rockwell-automation-icon.05b6277eb8.svg",
 			IsShowing: true,
 			Name:      "Rockwell",
@@ -526,7 +469,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.rockwellautomation.com/en-us/tools/software-subscriptions-updated.html",
 		},
 		{
-			ID:        44,
 			ImageURL:  "https://www.aveva.com/content/experience-fragments/aveva/en/site/header-2/master/_jcr_content/root/responsivegrid/globalheader/logo.coreimg.svg/1655394323761/header-logo.svg",
 			IsShowing: true,
 			Name:      "Aveva",
@@ -534,7 +476,6 @@ func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
 			URL:       "https://www.aveva.com/en/solutions/operations/operations-control-hmi/",
 		},
 		{
-			ID:        49,
 			ImageURL:  "https://www.vectorlogo.zone/logos/grpcio/grpcio-ar21.svg",
 			IsShowing: true,
 			Name:      "gRPC",

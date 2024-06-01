@@ -1,13 +1,14 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"log/slog"
 
 	"github.com/bondzai/portfolio-backend/config"
 	"github.com/bondzai/portfolio-backend/internal/adapters/handler"
 	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	"github.com/bondzai/portfolio-backend/internal/core/services"
-
+	"github.com/bondzai/portfolio-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
@@ -16,16 +17,32 @@ import (
 var cfg = config.LoadConfig()
 
 func main() {
+	seedFlag := flag.Bool("seed", false, "Data seeding.")
+	flag.Parse()
+
+	if *seedFlag {
+		runSeed()
+	} else {
+		runServer()
+	}
+}
+
+func runServer() {
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: false,
+		AllowOrigins:     cfg.CorsOrigin,
+		AllowHeaders:     cfg.CorsHeader,
+		ExposeHeaders:    "Content-Length",
+	}))
 
-	mockRepo := repository.NewMock()
-	mongoReo := initMongoDB()
+	mongoRepo := initMongoDB()
 
-	certService := services.NewCertService(mockRepo)
-	projectService := services.NewProjectService(mockRepo)
-	skillService := services.NewSkillService(mockRepo)
+	certService := services.NewCertService(mongoRepo)
+	projectService := services.NewProjectService(mongoRepo)
+	skillService := services.NewSkillService(mongoRepo)
 	wakaService := services.NewStatService()
-	websocketService := services.NewWsService(mongoReo)
+	websocketService := services.NewWsService(mongoRepo)
 
 	restHandler := handler.NewHttpHandler(
 		certService,
@@ -35,13 +52,6 @@ func main() {
 	)
 
 	websocketHandler := handler.NewWsHandler(websocketService)
-
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: false,
-		AllowOrigins:     cfg.CorsOrigin,
-		AllowHeaders:     cfg.CorsHeader,
-		ExposeHeaders:    "Content-Length",
-	}))
 
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)
@@ -53,19 +63,51 @@ func main() {
 
 	websocketService.StartCronJob()
 
-	app.Listen(":" + cfg.Port)
+	if err := app.Listen(":" + cfg.Port); err != nil {
+		slog.Error("Failed to start server", err)
+	}
 }
 
 func initMongoDB() repository.MongoDBClientInterface {
-	mongoReo, err := repository.NewMongoDBClient(
+	mongoRepo, err := repository.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,
-		cfg.MongoCol,
 	)
 
 	if err != nil {
-		log.Println(err)
+		slog.Error("Failed to connect to MongoDB", err)
 	}
 
-	return mongoReo
+	return mongoRepo
+}
+
+func runSeed() {
+	mockRepo := repository.NewMock()
+	mongoRepo := initMongoDB()
+
+	var err error
+
+	certifications, _ := mockRepo.ReadCerts()
+	err = mongoRepo.InsertMany("certifications", utils.ConvertToInterfaceSlice(certifications))
+	if err != nil {
+		slog.Error("Error seeded certifications data", err)
+	} else {
+		slog.Info("Successfully seeded certifications data to MongoDB")
+	}
+
+	projects, _ := mockRepo.ReadProjects()
+	mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
+	if err != nil {
+		slog.Error("Error seeded projects data", err)
+	} else {
+		slog.Info("Successfully seeded projects data to MongoDB")
+	}
+
+	skills, _ := mockRepo.ReadSkills()
+	mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(skills))
+	if err != nil {
+		slog.Error("Error seeded skills data", err)
+	} else {
+		slog.Info("Successfully seeded skills data to MongoDB")
+	}
 }
