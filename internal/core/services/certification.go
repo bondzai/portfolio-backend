@@ -15,6 +15,6 @@ func NewCertService(repo ports.CertRepo) *certService {
 	}
 }
 
-func (m *certService) ReadCerts() ([]*models.Certification, error) {
+func (m *certService) ReadCerts() ([]models.Certification, error) {
 	return m.repo.ReadCerts()
 }

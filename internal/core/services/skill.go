@@ -15,6 +15,6 @@ func NewSkillService(repo ports.SkillRepo) *skillService {
 	}
 }
 
-func (m *skillService) ReadSkills() ([]*models.Skill, error) {
+func (m *skillService) ReadSkills() ([]models.Skill, error) {
 	return m.repo.ReadSkills()
 }

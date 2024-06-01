@@ -10,8 +10,8 @@ func NewMock() *MockRepository {
 	return &MockRepository{}
 }
 
-func (mr *MockRepository) ReadCerts() ([]*models.Certification, error) {
-	certifications := []*models.Certification{
+func (mr *MockRepository) ReadCerts() ([]models.Certification, error) {
+	certifications := []models.Certification{
 		{
 			Description: "Thin manager",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635443/Portfolio/cirtifications/Cir-Thin.png",
@@ -71,8 +71,8 @@ func (mr *MockRepository) ReadCerts() ([]*models.Certification, error) {
 	return certifications, nil
 }
 
-func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
-	projects := []*models.Project{
+func (mr *MockRepository) ReadProjects() ([]models.Project, error) {
+	projects := []models.Project{
 		{
 			HostURL:     "https://introbond-upload.cyclic.app/",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-cloudinary.png",
@@ -221,8 +221,8 @@ func (mr *MockRepository) ReadProjects() ([]*models.Project, error) {
 	return projects, nil
 }
 
-func (mr *MockRepository) ReadSkills() ([]*models.Skill, error) {
-	skills := []*models.Skill{
+func (mr *MockRepository) ReadSkills() ([]models.Skill, error) {
+	skills := []models.Skill{
 		{
 			ImageURL:  "https://www.vectorlogo.zone/logos/golang/golang-icon.svg",
 			IsShowing: true,
