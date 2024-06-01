@@ -1,4 +1,4 @@
-package usecases
+package services
 
 import (
 	"encoding/json"
@@ -8,9 +8,10 @@ import (
 
 	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
 	"github.com/gofiber/websocket/v2"
+	"github.com/robfig/cron/v3"
 )
 
-type Manager struct {
+type wsService struct {
 	connections []*websocket.Conn
 	activeUsers int
 	totalUsers  int
@@ -18,13 +19,13 @@ type Manager struct {
 	dbClient    repository.MongoDBClientInterface
 }
 
-func NewManager(dbClient repository.MongoDBClientInterface) *Manager {
-	return &Manager{
+func NewWsService(dbClient repository.MongoDBClientInterface) *wsService {
+	return &wsService{
 		dbClient: dbClient,
 	}
 }
 
-func (m *Manager) HandleConnection(c *websocket.Conn) {
+func (m *wsService) HandleConnection(c *websocket.Conn) {
 	m.addConnection(c)
 	defer m.removeConnection(c)
 
@@ -37,7 +38,7 @@ func (m *Manager) HandleConnection(c *websocket.Conn) {
 	}
 }
 
-func (m *Manager) addConnection(c *websocket.Conn) {
+func (m *wsService) addConnection(c *websocket.Conn) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -47,7 +48,7 @@ func (m *Manager) addConnection(c *websocket.Conn) {
 	m.updateUserCount()
 }
 
-func (m *Manager) removeConnection(c *websocket.Conn) {
+func (m *wsService) removeConnection(c *websocket.Conn) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -66,7 +67,7 @@ type UsageCount struct {
 	TotalUsers  int `json:"totalUsers"`
 }
 
-func (m *Manager) updateUserCount() {
+func (m *wsService) updateUserCount() {
 	data := UsageCount{
 		ActiveUsers: m.activeUsers,
 		TotalUsers:  m.totalUsers,
@@ -85,7 +86,7 @@ func (m *Manager) updateUserCount() {
 	}
 }
 
-func (m *Manager) ResetDailyUserCount() {
+func (m *wsService) ResetDailyUserCount() {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -96,4 +97,17 @@ func (m *Manager) ResetDailyUserCount() {
 		Time:       time.Now(),
 		TotalUsers: totalUsers,
 	})
+}
+
+func (m *wsService) StartCronJob() {
+	c := cron.New()
+
+	c.AddFunc("59 23 * * *", func() {
+		m.ResetDailyUserCount()
+	})
+
+	c.Start()
+	defer c.Stop()
+
+	log.Println("cron started...")
 }
