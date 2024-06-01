@@ -20,6 +20,10 @@ type config struct {
 	MongoCol   string `mapstructure:"MONGODB_COL"`
 	DevToken   string `mapstructure:"DEV_TOKEN"`
 	ExtraToken string `mapstructure:"EXTRA_TOKEN"`
+	RedisUrl   string `mapstructure:"REDIS_URL"`
+	RedisDB    string `mapstructure:"REDIS_DB"`
+	RedisUser  string `mapstructure:"REDIS_USER"`
+	RedisPass  string `mapstructure:"REDIS_PASS"`
 }
 
 var (
@@ -31,7 +35,6 @@ func LoadConfig() *config {
 	once.Do(func() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath("./config")
 		viper.AutomaticEnv()
 
 		cfg = &config{}
