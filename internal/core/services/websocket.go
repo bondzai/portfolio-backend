@@ -81,7 +81,7 @@ func (s *WsService) resetDailyUserCount() {
 	totalUsers := s.totalUsers
 	s.totalUsers = 0
 
-	s.dbClient.InsertTotalUsers(
+	s.dbClient.InsertOne(
 		"usage",
 		&models.TotalUsers{
 			Time:       time.Now(),
