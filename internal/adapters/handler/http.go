@@ -6,21 +6,28 @@ import (
 )
 
 type httpHandler struct {
-	cs ports.CertService
-	ps ports.ProjectService
-	ss ports.SkillService
+	certService    ports.CertService
+	projectService ports.ProjectService
+	skillService   ports.SkillService
+	wakaService    ports.WakaService
 }
 
-func NewHttpHandler(cs ports.CertService, ps ports.ProjectService, ss ports.SkillService) *httpHandler {
+func NewHttpHandler(
+	certService ports.CertService,
+	projectService ports.ProjectService,
+	skillService ports.SkillService,
+	wakaService ports.WakaService,
+) *httpHandler {
 	return &httpHandler{
-		cs: cs,
-		ps: ps,
-		ss: ss,
+		certService:    certService,
+		projectService: projectService,
+		skillService:   skillService,
+		wakaService:    wakaService,
 	}
 }
 
 func (h *httpHandler) GetCerts(c *fiber.Ctx) error {
-	data, err := h.cs.ReadCerts()
+	data, err := h.certService.ReadCerts()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
@@ -29,7 +36,7 @@ func (h *httpHandler) GetCerts(c *fiber.Ctx) error {
 }
 
 func (h *httpHandler) GetSkills(c *fiber.Ctx) error {
-	data, err := h.ss.ReadSkills()
+	data, err := h.skillService.ReadSkills()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
@@ -38,7 +45,16 @@ func (h *httpHandler) GetSkills(c *fiber.Ctx) error {
 }
 
 func (h *httpHandler) GetProjects(c *fiber.Ctx) error {
-	data, err := h.ps.ReadProjects()
+	data, err := h.projectService.ReadProjects()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.JSON(data)
+}
+
+func (h *httpHandler) GetWakaStats(c *fiber.Ctx) error {
+	data, err := h.wakaService.FetchDataFromAPI()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
