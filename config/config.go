@@ -49,7 +49,6 @@ func LoadConfig() *config {
 	return cfg
 }
 
-// setDefaults sets default values in Viper based on struct tags
 func setDefaults(cfg *config) {
 	elem := reflect.TypeOf(cfg).Elem()
 	for i := 0; i < elem.NumField(); i++ {
