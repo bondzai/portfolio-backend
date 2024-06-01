@@ -96,7 +96,7 @@ func runSeed() {
 	}
 
 	projects, _ := mockRepo.ReadProjects()
-	mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
+	err = mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
 	if err != nil {
 		slog.Error("Error seeded projects data", err)
 	} else {
@@ -104,7 +104,7 @@ func runSeed() {
 	}
 
 	skills, _ := mockRepo.ReadSkills()
-	mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(skills))
+	err = mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(skills))
 	if err != nil {
 		slog.Error("Error seeded skills data", err)
 	} else {
