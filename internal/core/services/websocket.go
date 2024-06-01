@@ -81,10 +81,13 @@ func (s *WsService) resetDailyUserCount() {
 	totalUsers := s.totalUsers
 	s.totalUsers = 0
 
-	s.dbClient.SetDataToMongo(&models.TotalUsers{
-		Time:       time.Now(),
-		TotalUsers: totalUsers,
-	})
+	s.dbClient.InsertTotalUsers(
+		"usage",
+		&models.TotalUsers{
+			Time:       time.Now(),
+			TotalUsers: totalUsers,
+		},
+	)
 }
 
 func (s *WsService) StartCronJob() {
