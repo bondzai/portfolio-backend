@@ -26,6 +26,10 @@ func NewHttpHandler(
 	}
 }
 
+func (h *httpHandler) HealthCheck(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).SendString("Ok")
+}
+
 func (h *httpHandler) GetCerts(c *fiber.Ctx) error {
 	data, err := h.certService.ReadCerts()
 	if err != nil {
