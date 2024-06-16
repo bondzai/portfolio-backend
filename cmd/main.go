@@ -8,13 +8,25 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/handler"
 	"github.com/bondzai/portfolio-backend/internal/repository"
 	"github.com/bondzai/portfolio-backend/internal/usecase"
-	"github.com/bondzai/portfolio-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 )
 
 var cfg = config.LoadConfig()
+
+func initMongoDB() repository.MongoDBClientInterface {
+	mongoRepo, err := repository.NewMongoDBClient(
+		cfg.MongoUrl,
+		cfg.MongoDB,
+	)
+
+	if err != nil {
+		slog.Error("Failed to connect to MongoDB", err)
+	}
+
+	return mongoRepo
+}
 
 func main() {
 	seedFlag := flag.Bool("seed", false, "Data seeding.")
@@ -65,49 +77,5 @@ func runServer() {
 
 	if err := app.Listen(":" + cfg.Port); err != nil {
 		slog.Error("Failed to start server", err)
-	}
-}
-
-func initMongoDB() repository.MongoDBClientInterface {
-	mongoRepo, err := repository.NewMongoDBClient(
-		cfg.MongoUrl,
-		cfg.MongoDB,
-	)
-
-	if err != nil {
-		slog.Error("Failed to connect to MongoDB", err)
-	}
-
-	return mongoRepo
-}
-
-func runSeed() {
-	mockRepo := repository.NewMock()
-	mongoRepo := initMongoDB()
-
-	var err error
-
-	certifications, _ := mockRepo.ReadCerts()
-	err = mongoRepo.InsertMany("certifications", utils.ConvertToInterfaceSlice(certifications))
-	if err != nil {
-		slog.Error("Error seeded certifications data", err)
-	} else {
-		slog.Info("Successfully seeded certifications data to MongoDB")
-	}
-
-	projects, _ := mockRepo.ReadProjects()
-	err = mongoRepo.InsertMany("projects", utils.ConvertToInterfaceSlice(projects))
-	if err != nil {
-		slog.Error("Error seeded projects data", err)
-	} else {
-		slog.Info("Successfully seeded projects data to MongoDB")
-	}
-
-	skills, _ := mockRepo.ReadSkills()
-	err = mongoRepo.InsertMany("skills", utils.ConvertToInterfaceSlice(skills))
-	if err != nil {
-		slog.Error("Error seeded skills data", err)
-	} else {
-		slog.Info("Successfully seeded skills data to MongoDB")
 	}
 }
