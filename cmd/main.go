@@ -5,9 +5,9 @@ import (
 	"log/slog"
 
 	"github.com/bondzai/portfolio-backend/config"
-	"github.com/bondzai/portfolio-backend/internal/adapters/handler"
-	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
-	"github.com/bondzai/portfolio-backend/internal/core/services"
+	"github.com/bondzai/portfolio-backend/internal/handler"
+	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/services"
 	"github.com/bondzai/portfolio-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
