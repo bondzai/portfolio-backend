@@ -3,15 +3,15 @@ package handler
 import (
 	"log"
 
-	"github.com/bondzai/portfolio-backend/internal/core/services"
+	"github.com/bondzai/portfolio-backend/internal/usecase"
 	"github.com/gofiber/websocket/v2"
 )
 
 type WsHandler struct {
-	wsService *services.WsService
+	wsService *usecase.WsService
 }
 
-func NewWsHandler(wsService *services.WsService) *WsHandler {
+func NewWsHandler(wsService *usecase.WsService) *WsHandler {
 	return &WsHandler{
 		wsService: wsService,
 	}

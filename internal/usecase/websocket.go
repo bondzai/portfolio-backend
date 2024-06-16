@@ -1,4 +1,4 @@
-package services
+package usecase
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bondzai/portfolio-backend/internal/adapters/repository"
-	"github.com/bondzai/portfolio-backend/internal/core/models"
+	"github.com/bondzai/portfolio-backend/internal/domain"
+	"github.com/bondzai/portfolio-backend/internal/repository"
 	"github.com/gofiber/websocket/v2"
 	"github.com/robfig/cron/v3"
 )
@@ -26,28 +26,28 @@ func NewWsService(dbClient repository.MongoDBClientInterface) *WsService {
 	}
 }
 
-func (s *WsService) AddConnection(c *websocket.Conn) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+func (u *WsService) AddConnection(c *websocket.Conn) {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
 
-	s.connections = append(s.connections, c)
-	s.totalUsers++
-	s.activeUsers = len(s.connections)
-	s.updateUserCount()
+	u.connections = append(u.connections, c)
+	u.totalUsers++
+	u.activeUsers = len(u.connections)
+	u.updateUserCount()
 }
 
-func (s *WsService) RemoveConnection(c *websocket.Conn) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+func (u *WsService) RemoveConnection(c *websocket.Conn) {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
 
-	for i, conn := range s.connections {
+	for i, conn := range u.connections {
 		if conn == c {
-			s.connections = append(s.connections[:i], s.connections[i+1:]...)
+			u.connections = append(u.connections[:i], u.connections[i+1:]...)
 			break
 		}
 	}
-	s.activeUsers = len(s.connections)
-	s.updateUserCount()
+	u.activeUsers = len(u.connections)
+	u.updateUserCount()
 }
 
 type usageCount struct {
@@ -55,10 +55,10 @@ type usageCount struct {
 	TotalUsers  int `json:"totalUsers"`
 }
 
-func (s *WsService) updateUserCount() {
+func (u *WsService) updateUserCount() {
 	data := usageCount{
-		ActiveUsers: s.activeUsers,
-		TotalUsers:  s.totalUsers,
+		ActiveUsers: u.activeUsers,
+		TotalUsers:  u.totalUsers,
 	}
 
 	message, err := json.Marshal(data)
@@ -67,34 +67,34 @@ func (s *WsService) updateUserCount() {
 		return
 	}
 
-	for _, conn := range s.connections {
+	for _, conn := range u.connections {
 		if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
 			log.Println("Error writing message:", err)
 		}
 	}
 }
 
-func (s *WsService) resetDailyUserCount() {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+func (u *WsService) resetDailyUserCount() {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
 
-	totalUsers := s.totalUsers
-	s.totalUsers = 0
+	totalUsers := u.totalUsers
+	u.totalUsers = 0
 
-	s.dbClient.InsertOne(
+	u.dbClient.InsertOne(
 		"usage",
-		&models.TotalUsers{
+		&domain.TotalUsers{
 			Time:       time.Now(),
 			TotalUsers: totalUsers,
 		},
 	)
 }
 
-func (s *WsService) StartCronJob() {
+func (u *WsService) StartCronJob() {
 	c := cron.New()
 
 	c.AddFunc("59 23 * * *", func() {
-		s.resetDailyUserCount()
+		u.resetDailyUserCount()
 	})
 
 	c.Start()

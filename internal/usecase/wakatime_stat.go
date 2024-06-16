@@ -1,4 +1,4 @@
-package services
+package usecase
 
 import (
 	"encoding/base64"
@@ -6,11 +6,15 @@ import (
 	"fmt"
 
 	"github.com/bondzai/portfolio-backend/config"
+	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 	"github.com/valyala/fasthttp"
 )
 
-type statService struct {
+type WakaService interface {
+	FetchDataFromAPI() (map[string]interface{}, error)
 }
+
+type statService struct{}
 
 func NewStatService() *statService {
 	return &statService{}
@@ -63,7 +67,7 @@ func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	return cleanedData
 }
 
-func (s *statService) FetchDataFromAPI() (map[string]interface{}, error) {
+func (u *statService) FetchDataFromAPI() (map[string]interface{}, error) {
 	cfg := config.LoadConfig()
 	req := fasthttp.AcquireRequest()
 	req.SetRequestURI(cfg.WakaUrl)
@@ -71,12 +75,12 @@ func (s *statService) FetchDataFromAPI() (map[string]interface{}, error) {
 
 	resp := fasthttp.AcquireResponse()
 	if err := fasthttp.Do(req, resp); err != nil {
-		return nil, err
+		return nil, errs.NewUnExpectedError()
 	}
 
 	var response map[string]interface{}
 	if err := json.Unmarshal(resp.Body(), &response); err != nil {
-		return nil, err
+		return nil, errs.NewUnExpectedError()
 	}
 
 	wakatimeData := map[string]interface{}{
