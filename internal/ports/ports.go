@@ -5,16 +5,6 @@ import (
 )
 
 type (
-	CertService interface {
-		ReadCerts() ([]domain.Certification, error)
-	}
-
-	CertRepo interface {
-		ReadCerts() ([]domain.Certification, error)
-	}
-)
-
-type (
 	ProjectService interface {
 		ReadProjects() ([]domain.Project, error)
 	}

@@ -4,14 +4,18 @@ import (
 	"slices"
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/ports"
+	"github.com/bondzai/portfolio-backend/internal/repository"
 )
 
-type certService struct {
-	repo ports.CertRepo
+type CertService interface {
+	ReadCerts() ([]domain.Certification, error)
 }
 
-func NewCertService(repo ports.CertRepo) *certService {
+type certService struct {
+	repo repository.MongoDBClientInterface
+}
+
+func NewCertService(repo repository.MongoDBClientInterface) *certService {
 	return &certService{
 		repo: repo,
 	}
