@@ -1,4 +1,4 @@
-package services
+package usecase
 
 import (
 	"encoding/base64"

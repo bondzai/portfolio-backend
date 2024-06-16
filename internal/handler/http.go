@@ -1,22 +1,22 @@
 package handler
 
 import (
-	"github.com/bondzai/portfolio-backend/internal/services"
+	"github.com/bondzai/portfolio-backend/internal/usecase"
 	"github.com/gofiber/fiber/v2"
 )
 
 type httpHandler struct {
-	certService    services.CertService
-	projectService services.ProjectService
-	skillService   services.SkillService
-	wakaService    services.WakaService
+	certService    usecase.CertService
+	projectService usecase.ProjectService
+	skillService   usecase.SkillService
+	wakaService    usecase.WakaService
 }
 
 func NewHttpHandler(
-	certService services.CertService,
-	projectService services.ProjectService,
-	skillService services.SkillService,
-	wakaService services.WakaService,
+	certService usecase.CertService,
+	projectService usecase.ProjectService,
+	skillService usecase.SkillService,
+	wakaService usecase.WakaService,
 ) *httpHandler {
 	return &httpHandler{
 		certService:    certService,

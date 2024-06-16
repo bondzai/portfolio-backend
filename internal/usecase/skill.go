@@ -1,4 +1,4 @@
-package services
+package usecase
 
 import (
 	"github.com/bondzai/portfolio-backend/internal/domain"
