@@ -4,14 +4,18 @@ import (
 	"slices"
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/ports"
+	"github.com/bondzai/portfolio-backend/internal/repository"
 )
 
-type projectService struct {
-	repo ports.ProjectRepo
+type ProjectService interface {
+	ReadProjects() ([]domain.Project, error)
 }
 
-func NewProjectService(repo ports.ProjectRepo) *projectService {
+type projectService struct {
+	repo repository.MongoDBClientInterface
+}
+
+func NewProjectService(repo repository.MongoDBClientInterface) *projectService {
 	return &projectService{
 		repo: repo,
 	}

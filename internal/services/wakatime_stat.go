@@ -9,8 +9,11 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type statService struct {
+type WakaService interface {
+	FetchDataFromAPI() (map[string]interface{}, error)
 }
+
+type statService struct{}
 
 func NewStatService() *statService {
 	return &statService{}

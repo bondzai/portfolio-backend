@@ -2,14 +2,18 @@ package services
 
 import (
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/ports"
+	"github.com/bondzai/portfolio-backend/internal/repository"
 )
 
-type skillService struct {
-	repo ports.SkillRepo
+type SkillService interface {
+	ReadSkills() ([]domain.Skill, error)
 }
 
-func NewSkillService(repo ports.SkillRepo) *skillService {
+type skillService struct {
+	repo repository.MongoDBClientInterface
+}
+
+func NewSkillService(repo repository.MongoDBClientInterface) *skillService {
 	return &skillService{
 		repo: repo,
 	}
