@@ -7,7 +7,7 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/utils"
 )
 
-func runSeed() {
+func RunSeed() {
 	mockRepo := repository.NewMock()
 	mongoRepo := initMongoDB()
 

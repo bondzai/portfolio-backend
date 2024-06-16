@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log/slog"
 
 	"github.com/bondzai/portfolio-backend/config"
@@ -29,17 +28,6 @@ func initMongoDB() repository.MongoDBClientInterface {
 }
 
 func main() {
-	seedFlag := flag.Bool("seed", false, "Data seeding.")
-	flag.Parse()
-
-	if *seedFlag {
-		runSeed()
-	} else {
-		runServer()
-	}
-}
-
-func runServer() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: false,
