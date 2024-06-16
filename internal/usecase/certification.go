@@ -21,8 +21,8 @@ func NewCertService(repo repository.MongoDBClientInterface) *certService {
 	}
 }
 
-func (s *certService) ReadCerts() ([]domain.Certification, error) {
-	data, err := s.repo.ReadCerts()
+func (u *certService) ReadCerts() ([]domain.Certification, error) {
+	data, err := u.repo.ReadCerts()
 	if err != nil {
 		return []domain.Certification{}, err
 	}

@@ -21,8 +21,8 @@ func NewProjectService(repo repository.MongoDBClientInterface) *projectService {
 	}
 }
 
-func (s *projectService) ReadProjects() ([]domain.Project, error) {
-	data, err := s.repo.ReadProjects()
+func (u *projectService) ReadProjects() ([]domain.Project, error) {
+	data, err := u.repo.ReadProjects()
 	if err != nil {
 		return []domain.Project{}, err
 	}

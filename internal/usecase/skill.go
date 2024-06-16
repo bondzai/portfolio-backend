@@ -19,8 +19,8 @@ func NewSkillService(repo repository.MongoDBClientInterface) *skillService {
 	}
 }
 
-func (s *skillService) ReadSkills() ([]domain.Skill, error) {
-	data, err := s.repo.ReadSkills()
+func (u *skillService) ReadSkills() ([]domain.Skill, error) {
+	data, err := u.repo.ReadSkills()
 	if err != nil {
 		return []domain.Skill{}, err
 	}

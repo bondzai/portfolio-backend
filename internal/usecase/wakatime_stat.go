@@ -66,7 +66,7 @@ func cleanData(data []interface{}, newLastIndex int) []map[string]interface{} {
 	return cleanedData
 }
 
-func (s *statService) FetchDataFromAPI() (map[string]interface{}, error) {
+func (u *statService) FetchDataFromAPI() (map[string]interface{}, error) {
 	cfg := config.LoadConfig()
 	req := fasthttp.AcquireRequest()
 	req.SetRequestURI(cfg.WakaUrl)
