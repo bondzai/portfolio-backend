@@ -17,10 +17,10 @@ type WsService struct {
 	activeUsers int
 	totalUsers  int
 	mutex       sync.Mutex
-	dbClient    repository.MongoDBClientInterface
+	dbClient    repository.MongoDBClient
 }
 
-func NewWsService(dbClient repository.MongoDBClientInterface) *WsService {
+func NewWsService(dbClient repository.MongoDBClient) *WsService {
 	return &WsService{
 		dbClient: dbClient,
 	}

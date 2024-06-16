@@ -13,10 +13,10 @@ type CertService interface {
 }
 
 type certService struct {
-	repo repository.MongoDBClientInterface
+	repo repository.MongoDBClient
 }
 
-func NewCertService(repo repository.MongoDBClientInterface) *certService {
+func NewCertService(repo repository.MongoDBClient) *certService {
 	return &certService{
 		repo: repo,
 	}

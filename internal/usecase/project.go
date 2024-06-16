@@ -13,10 +13,10 @@ type ProjectService interface {
 }
 
 type projectService struct {
-	repo repository.MongoDBClientInterface
+	repo repository.MongoDBClient
 }
 
-func NewProjectService(repo repository.MongoDBClientInterface) *projectService {
+func NewProjectService(repo repository.MongoDBClient) *projectService {
 	return &projectService{
 		repo: repo,
 	}

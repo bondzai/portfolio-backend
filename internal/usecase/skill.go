@@ -11,10 +11,10 @@ type SkillService interface {
 }
 
 type skillService struct {
-	repo repository.MongoDBClientInterface
+	repo repository.MongoDBClient
 }
 
-func NewSkillService(repo repository.MongoDBClientInterface) *skillService {
+func NewSkillService(repo repository.MongoDBClient) *skillService {
 	return &skillService{
 		repo: repo,
 	}

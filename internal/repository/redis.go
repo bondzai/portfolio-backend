@@ -7,7 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type RedisClientInterface interface {
+type RedisClient interface {
 	InsertOne(collectionName string, data *domain.TotalUsers) error
 	InsertMany(collectionName string, data []interface{}) error
 	ReadCerts() ([]domain.Certification, error)

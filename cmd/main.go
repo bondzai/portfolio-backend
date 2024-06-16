@@ -14,7 +14,7 @@ import (
 
 var cfg = config.LoadConfig()
 
-func initMongoDB() repository.MongoDBClientInterface {
+func initMongoDB() repository.MongoDBClient {
 	mongoRepo, err := repository.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,

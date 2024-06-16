@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type MongoDBClientInterface interface {
+type MongoDBClient interface {
 	InsertOne(collectionName string, data *domain.TotalUsers) error
 	InsertMany(collectionName string, data []interface{}) error
 	ReadCerts() ([]domain.Certification, error)
@@ -18,12 +18,12 @@ type MongoDBClientInterface interface {
 	ReadSkills() ([]domain.Skill, error)
 }
 
-type MongoDBClient struct {
+type mongoDBClient struct {
 	client *mongo.Client
 	db     *mongo.Database
 }
 
-func NewMongoDBClient(connectionString, dbName string) (*MongoDBClient, error) {
+func NewMongoDBClient(connectionString, dbName string) (*mongoDBClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -35,13 +35,13 @@ func NewMongoDBClient(connectionString, dbName string) (*MongoDBClient, error) {
 
 	db := client.Database(dbName)
 
-	return &MongoDBClient{
+	return &mongoDBClient{
 		client: client,
 		db:     db,
 	}, nil
 }
 
-func (mc *MongoDBClient) InsertOne(collectionName string, data *domain.TotalUsers) error {
+func (mc *mongoDBClient) InsertOne(collectionName string, data *domain.TotalUsers) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -55,7 +55,7 @@ func (mc *MongoDBClient) InsertOne(collectionName string, data *domain.TotalUser
 	return nil
 }
 
-func (mc *MongoDBClient) InsertMany(collectionName string, data []interface{}) error {
+func (mc *mongoDBClient) InsertMany(collectionName string, data []interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func (mc *MongoDBClient) InsertMany(collectionName string, data []interface{}) e
 	return nil
 }
 
-func (mc *MongoDBClient) ReadCerts() ([]domain.Certification, error) {
+func (mc *mongoDBClient) ReadCerts() ([]domain.Certification, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -96,7 +96,7 @@ func (mc *MongoDBClient) ReadCerts() ([]domain.Certification, error) {
 	return certifications, nil
 }
 
-func (mc *MongoDBClient) ReadProjects() ([]domain.Project, error) {
+func (mc *mongoDBClient) ReadProjects() ([]domain.Project, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -123,7 +123,7 @@ func (mc *MongoDBClient) ReadProjects() ([]domain.Project, error) {
 	return projects, nil
 }
 
-func (mc *MongoDBClient) ReadSkills() ([]domain.Skill, error) {
+func (mc *mongoDBClient) ReadSkills() ([]domain.Skill, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
