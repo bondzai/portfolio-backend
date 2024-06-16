@@ -5,6 +5,7 @@ import (
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
 type ProjectService interface {
@@ -24,7 +25,7 @@ func NewProjectService(repo repository.MongoDBClientInterface) *projectService {
 func (u *projectService) ReadProjects() ([]domain.Project, error) {
 	data, err := u.repo.ReadProjects()
 	if err != nil {
-		return []domain.Project{}, err
+		return []domain.Project{}, errs.NewUnExpectedError()
 	}
 
 	slices.Reverse(data)

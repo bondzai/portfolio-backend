@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
 type SkillService interface {
@@ -22,7 +23,7 @@ func NewSkillService(repo repository.MongoDBClientInterface) *skillService {
 func (u *skillService) ReadSkills() ([]domain.Skill, error) {
 	data, err := u.repo.ReadSkills()
 	if err != nil {
-		return []domain.Skill{}, err
+		return []domain.Skill{}, errs.NewUnExpectedError()
 	}
 
 	return data, nil

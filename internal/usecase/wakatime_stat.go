@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/bondzai/portfolio-backend/config"
+	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 	"github.com/valyala/fasthttp"
 )
 
@@ -74,12 +75,12 @@ func (u *statService) FetchDataFromAPI() (map[string]interface{}, error) {
 
 	resp := fasthttp.AcquireResponse()
 	if err := fasthttp.Do(req, resp); err != nil {
-		return nil, err
+		return nil, errs.NewUnExpectedError()
 	}
 
 	var response map[string]interface{}
 	if err := json.Unmarshal(resp.Body(), &response); err != nil {
-		return nil, err
+		return nil, errs.NewUnExpectedError()
 	}
 
 	wakatimeData := map[string]interface{}{

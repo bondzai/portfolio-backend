@@ -5,6 +5,7 @@ import (
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
 type CertService interface {
@@ -24,7 +25,7 @@ func NewCertService(repo repository.MongoDBClientInterface) *certService {
 func (u *certService) ReadCerts() ([]domain.Certification, error) {
 	data, err := u.repo.ReadCerts()
 	if err != nil {
-		return []domain.Certification{}, err
+		return []domain.Certification{}, errs.NewUnExpectedError()
 	}
 
 	slices.Reverse(data)
