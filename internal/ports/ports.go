@@ -1,36 +1,36 @@
 package ports
 
 import (
-	"github.com/bondzai/portfolio-backend/internal/models"
+	"github.com/bondzai/portfolio-backend/internal/domain"
 )
 
 type (
 	CertService interface {
-		ReadCerts() ([]models.Certification, error)
+		ReadCerts() ([]domain.Certification, error)
 	}
 
 	CertRepo interface {
-		ReadCerts() ([]models.Certification, error)
+		ReadCerts() ([]domain.Certification, error)
 	}
 )
 
 type (
 	ProjectService interface {
-		ReadProjects() ([]models.Project, error)
+		ReadProjects() ([]domain.Project, error)
 	}
 
 	ProjectRepo interface {
-		ReadProjects() ([]models.Project, error)
+		ReadProjects() ([]domain.Project, error)
 	}
 )
 
 type (
 	SkillService interface {
-		ReadSkills() ([]models.Skill, error)
+		ReadSkills() ([]domain.Skill, error)
 	}
 
 	SkillRepo interface {
-		ReadSkills() ([]models.Skill, error)
+		ReadSkills() ([]domain.Skill, error)
 	}
 )
 

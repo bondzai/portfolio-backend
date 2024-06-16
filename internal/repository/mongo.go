@@ -4,18 +4,18 @@ import (
 	"context"
 	"time"
 
-	"github.com/bondzai/portfolio-backend/internal/models"
+	"github.com/bondzai/portfolio-backend/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBClientInterface interface {
-	InsertOne(collectionName string, data *models.TotalUsers) error
+	InsertOne(collectionName string, data *domain.TotalUsers) error
 	InsertMany(collectionName string, data []interface{}) error
-	ReadCerts() ([]models.Certification, error)
-	ReadProjects() ([]models.Project, error)
-	ReadSkills() ([]models.Skill, error)
+	ReadCerts() ([]domain.Certification, error)
+	ReadProjects() ([]domain.Project, error)
+	ReadSkills() ([]domain.Skill, error)
 }
 
 type MongoDBClient struct {
@@ -41,7 +41,7 @@ func NewMongoDBClient(connectionString, dbName string) (*MongoDBClient, error) {
 	}, nil
 }
 
-func (mc *MongoDBClient) InsertOne(collectionName string, data *models.TotalUsers) error {
+func (mc *MongoDBClient) InsertOne(collectionName string, data *domain.TotalUsers) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func (mc *MongoDBClient) InsertMany(collectionName string, data []interface{}) e
 	return nil
 }
 
-func (mc *MongoDBClient) ReadCerts() ([]models.Certification, error) {
+func (mc *MongoDBClient) ReadCerts() ([]domain.Certification, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -85,9 +85,9 @@ func (mc *MongoDBClient) ReadCerts() ([]models.Certification, error) {
 		return nil, err
 	}
 
-	var certifications []models.Certification
+	var certifications []domain.Certification
 	for _, result := range results {
-		var certification models.Certification
+		var certification domain.Certification
 		bsonBytes, _ := bson.Marshal(result)
 		bson.Unmarshal(bsonBytes, &certification)
 		certifications = append(certifications, certification)
@@ -96,7 +96,7 @@ func (mc *MongoDBClient) ReadCerts() ([]models.Certification, error) {
 	return certifications, nil
 }
 
-func (mc *MongoDBClient) ReadProjects() ([]models.Project, error) {
+func (mc *MongoDBClient) ReadProjects() ([]domain.Project, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -112,9 +112,9 @@ func (mc *MongoDBClient) ReadProjects() ([]models.Project, error) {
 		return nil, err
 	}
 
-	var projects []models.Project
+	var projects []domain.Project
 	for _, result := range results {
-		var project models.Project
+		var project domain.Project
 		bsonBytes, _ := bson.Marshal(result)
 		bson.Unmarshal(bsonBytes, &project)
 		projects = append(projects, project)
@@ -123,7 +123,7 @@ func (mc *MongoDBClient) ReadProjects() ([]models.Project, error) {
 	return projects, nil
 }
 
-func (mc *MongoDBClient) ReadSkills() ([]models.Skill, error) {
+func (mc *MongoDBClient) ReadSkills() ([]domain.Skill, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -139,9 +139,9 @@ func (mc *MongoDBClient) ReadSkills() ([]models.Skill, error) {
 		return nil, err
 	}
 
-	var skills []models.Skill
+	var skills []domain.Skill
 	for _, result := range results {
-		var skill models.Skill
+		var skill domain.Skill
 		bsonBytes, _ := bson.Marshal(result)
 		bson.Unmarshal(bsonBytes, &skill)
 		skills = append(skills, skill)

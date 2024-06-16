@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/bondzai/portfolio-backend/internal/models"
+	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/bondzai/portfolio-backend/internal/ports"
 )
 
@@ -15,10 +15,10 @@ func NewSkillService(repo ports.SkillRepo) *skillService {
 	}
 }
 
-func (s *skillService) ReadSkills() ([]models.Skill, error) {
+func (s *skillService) ReadSkills() ([]domain.Skill, error) {
 	data, err := s.repo.ReadSkills()
 	if err != nil {
-		return []models.Skill{}, err
+		return []domain.Skill{}, err
 	}
 
 	return data, nil
