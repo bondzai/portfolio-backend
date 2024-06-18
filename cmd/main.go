@@ -15,7 +15,7 @@ import (
 var cfg = config.LoadConfig()
 
 func initMongoDB() repository.MongoDBClient {
-	mongoRepo, err := repository.NewMongoDBClient(
+	mongoClient, err := repository.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,
 	)
@@ -24,7 +24,17 @@ func initMongoDB() repository.MongoDBClient {
 		slog.Error("Failed to connect to MongoDB", err)
 	}
 
-	return mongoRepo
+	return mongoClient
+}
+
+func initRedis() repository.RedisClient {
+	redisClient := repository.NewRedisClient(
+		"127.0.0.1:6379",
+		"",
+		0,
+	)
+
+	return redisClient
 }
 
 func main() {
