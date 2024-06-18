@@ -6,7 +6,7 @@ import (
 	"github.com/bondzai/portfolio-backend/config"
 	"github.com/bondzai/portfolio-backend/internal/handlers"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
-	"github.com/bondzai/portfolio-backend/internal/usecase"
+	"github.com/bondzai/portfolio-backend/internal/usecases"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
@@ -48,11 +48,11 @@ func main() {
 
 	mongoRepo := initMongoDB()
 
-	certService := usecase.NewCertService(mongoRepo)
-	projectService := usecase.NewProjectService(mongoRepo)
-	skillService := usecase.NewSkillService(mongoRepo)
-	wakaService := usecase.NewStatService()
-	websocketService := usecase.NewWsService(mongoRepo)
+	certService := usecases.NewCertService(mongoRepo)
+	projectService := usecases.NewProjectService(mongoRepo)
+	skillService := usecases.NewSkillService(mongoRepo)
+	wakaService := usecases.NewStatService()
+	websocketService := usecases.NewWsService(mongoRepo)
 
 	restHandler := handlers.NewHttpHandler(
 		certService,
