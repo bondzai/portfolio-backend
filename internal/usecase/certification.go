@@ -4,7 +4,7 @@ import (
 	"slices"
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
@@ -13,10 +13,10 @@ type CertService interface {
 }
 
 type certService struct {
-	repo repository.MongoDBClient
+	repo repositories.MongoDBClient
 }
 
-func NewCertService(repo repository.MongoDBClient) *certService {
+func NewCertService(repo repositories.MongoDBClient) *certService {
 	return &certService{
 		repo: repo,
 	}

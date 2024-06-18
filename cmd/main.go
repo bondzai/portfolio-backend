@@ -5,7 +5,7 @@ import (
 
 	"github.com/bondzai/portfolio-backend/config"
 	"github.com/bondzai/portfolio-backend/internal/handlers"
-	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/usecase"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -14,8 +14,8 @@ import (
 
 var cfg = config.LoadConfig()
 
-func initMongoDB() repository.MongoDBClient {
-	mongoClient, err := repository.NewMongoDBClient(
+func initMongoDB() repositories.MongoDBClient {
+	mongoClient, err := repositories.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,
 	)
@@ -27,8 +27,8 @@ func initMongoDB() repository.MongoDBClient {
 	return mongoClient
 }
 
-func initRedis() repository.RedisClient {
-	redisClient := repository.NewRedisClient(
+func initRedis() repositories.RedisClient {
+	redisClient := repositories.NewRedisClient(
 		"127.0.0.1:6379",
 		"",
 		0,

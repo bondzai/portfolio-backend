@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/gofiber/websocket/v2"
 	"github.com/robfig/cron/v3"
 )
@@ -17,10 +17,10 @@ type WsService struct {
 	activeUsers int
 	totalUsers  int
 	mutex       sync.Mutex
-	dbClient    repository.MongoDBClient
+	dbClient    repositories.MongoDBClient
 }
 
-func NewWsService(dbClient repository.MongoDBClient) *WsService {
+func NewWsService(dbClient repositories.MongoDBClient) *WsService {
 	return &WsService{
 		dbClient: dbClient,
 	}
