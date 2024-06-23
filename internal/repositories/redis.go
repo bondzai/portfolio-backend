@@ -1,18 +1,12 @@
-package repository
+package repositories
 
 import (
 	"context"
 
-	"github.com/bondzai/portfolio-backend/internal/domain"
 	"github.com/go-redis/redis/v8"
 )
 
-type RedisClientInterface interface {
-	InsertOne(collectionName string, data *domain.TotalUsers) error
-	InsertMany(collectionName string, data []interface{}) error
-	ReadCerts() ([]domain.Certification, error)
-	ReadProjects() ([]domain.Project, error)
-	ReadSkills() ([]domain.Skill, error)
+type RedisClient interface {
 }
 
 type redisClient struct {

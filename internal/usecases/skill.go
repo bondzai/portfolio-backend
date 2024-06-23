@@ -1,8 +1,8 @@
-package usecase
+package usecases
 
 import (
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
@@ -11,10 +11,10 @@ type SkillService interface {
 }
 
 type skillService struct {
-	repo repository.MongoDBClientInterface
+	repo repositories.MongoDBClient
 }
 
-func NewSkillService(repo repository.MongoDBClientInterface) *skillService {
+func NewSkillService(repo repositories.MongoDBClient) *skillService {
 	return &skillService{
 		repo: repo,
 	}

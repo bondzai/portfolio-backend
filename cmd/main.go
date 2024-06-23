@@ -4,9 +4,9 @@ import (
 	"log/slog"
 
 	"github.com/bondzai/portfolio-backend/config"
-	"github.com/bondzai/portfolio-backend/internal/handler"
-	"github.com/bondzai/portfolio-backend/internal/repository"
-	"github.com/bondzai/portfolio-backend/internal/usecase"
+	"github.com/bondzai/portfolio-backend/internal/handlers"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
+	"github.com/bondzai/portfolio-backend/internal/usecases"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
@@ -14,8 +14,8 @@ import (
 
 var cfg = config.LoadConfig()
 
-func initMongoDB() repository.MongoDBClientInterface {
-	mongoRepo, err := repository.NewMongoDBClient(
+func initMongoDB() repositories.MongoDBClient {
+	mongoClient, err := repositories.NewMongoDBClient(
 		cfg.MongoUrl,
 		cfg.MongoDB,
 	)
@@ -24,7 +24,17 @@ func initMongoDB() repository.MongoDBClientInterface {
 		slog.Error("Failed to connect to MongoDB", err)
 	}
 
-	return mongoRepo
+	return mongoClient
+}
+
+func initRedis() repositories.RedisClient {
+	redisClient := repositories.NewRedisClient(
+		"127.0.0.1:6379",
+		"",
+		0,
+	)
+
+	return redisClient
 }
 
 func main() {
@@ -38,20 +48,20 @@ func main() {
 
 	mongoRepo := initMongoDB()
 
-	certService := usecase.NewCertService(mongoRepo)
-	projectService := usecase.NewProjectService(mongoRepo)
-	skillService := usecase.NewSkillService(mongoRepo)
-	wakaService := usecase.NewStatService()
-	websocketService := usecase.NewWsService(mongoRepo)
+	certService := usecases.NewCertService(mongoRepo)
+	projectService := usecases.NewProjectService(mongoRepo)
+	skillService := usecases.NewSkillService(mongoRepo)
+	wakaService := usecases.NewStatService()
+	websocketService := usecases.NewWsService(mongoRepo)
 
-	restHandler := handler.NewHttpHandler(
+	restHandler := handlers.NewHttpHandler(
 		certService,
 		projectService,
 		skillService,
 		wakaService,
 	)
 
-	websocketHandler := handler.NewWsHandler(websocketService)
+	websocketHandler := handlers.NewWsHandler(websocketService)
 
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)

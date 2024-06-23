@@ -1,10 +1,10 @@
-package usecase
+package usecases
 
 import (
 	"slices"
 
 	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/repository"
+	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
@@ -13,10 +13,10 @@ type ProjectService interface {
 }
 
 type projectService struct {
-	repo repository.MongoDBClientInterface
+	repo repositories.MongoDBClient
 }
 
-func NewProjectService(repo repository.MongoDBClientInterface) *projectService {
+func NewProjectService(repo repositories.MongoDBClient) *projectService {
 	return &projectService{
 		repo: repo,
 	}
