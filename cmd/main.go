@@ -14,29 +14,6 @@ import (
 
 var cfg = config.LoadConfig()
 
-func initMongoDB() repositories.MongoDBClient {
-	mongoClient, err := repositories.NewMongoDBClient(
-		cfg.MongoUrl,
-		cfg.MongoDB,
-	)
-
-	if err != nil {
-		slog.Error("Failed to connect to MongoDB", err)
-	}
-
-	return mongoClient
-}
-
-func initRedis() repositories.RedisClient {
-	redisClient := repositories.NewRedisClient(
-		"127.0.0.1:6379",
-		"",
-		0,
-	)
-
-	return redisClient
-}
-
 func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -76,4 +53,27 @@ func main() {
 	if err := app.Listen(":" + cfg.Port); err != nil {
 		slog.Error("Failed to start server", err)
 	}
+}
+
+func initMongoDB() repositories.MongoDBClient {
+	mongoClient, err := repositories.NewMongoDBClient(
+		cfg.MongoUrl,
+		cfg.MongoDB,
+	)
+
+	if err != nil {
+		slog.Error("Failed to connect to MongoDB", err)
+	}
+
+	return mongoClient
+}
+
+func initRedis() repositories.RedisClient {
+	redisClient := repositories.NewRedisClient(
+		"127.0.0.1:6379",
+		"",
+		0,
+	)
+
+	return redisClient
 }
