@@ -26,15 +26,15 @@ type IRedis interface {
 	RemovePattern(pattern string) error
 }
 
+type redis struct {
+	cmd goredis.Cmdable
+}
+
 // Config redis
 type Config struct {
 	Address  string
 	Password string
 	Database int
-}
-
-type redis struct {
-	cmd goredis.Cmdable
 }
 
 // New Redis interface with config
@@ -69,7 +69,7 @@ func (r *redis) IsConnected() bool {
 
 	_, err := r.cmd.Ping(ctx).Result()
 	if err != nil {
-		log.Println("Redis connection error")
+		log.Println("Redis")
 		return false
 	}
 	return true
