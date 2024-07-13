@@ -2,15 +2,12 @@ module github.com/bondzai/portfolio-backend
 
 go 1.22.2
 
-replace github.com/Shopify/sarama => github.com/IBM/sarama v1.43.2
-
 require (
 	github.com/IBM/sarama v1.43.2
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.9.0
 	github.com/valyala/fasthttp v1.52.0
 	go.mongodb.org/mongo-driver v1.15.0
 )
@@ -38,7 +35,6 @@ require (
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
@@ -46,7 +42,6 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
