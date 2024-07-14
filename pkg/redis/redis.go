@@ -6,80 +6,101 @@ import (
 	"log"
 	"time"
 
-	goredis "github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v8"
 )
 
 const (
 	Timeout = 1
 )
 
-// IRedis interface
-//
-//go:generate mockery --name=IRedis
-type IRedis interface {
-	IsConnected() bool
-	Get(key string, value interface{}) error
-	Set(key string, value interface{}) error
-	SetWithExpiration(key string, value interface{}, expiration time.Duration) error
-	Remove(keys ...string) error
-	Keys(pattern string) ([]string, error)
-	RemovePattern(pattern string) error
-}
+type (
+	Client interface {
+		IsConnected() bool
 
-// Config redis
-type Config struct {
-	Address  string
-	Password string
-	Database int
-}
+		Get(key string, value interface{}) error
+		Set(key string, value interface{}) error
+		SetWithExpiration(key string, value interface{}, expiration time.Duration) error
+		Remove(keys ...string) error
 
-type redis struct {
-	cmd goredis.Cmdable
-}
+		Publish(channel string, message interface{}) error
+		Subscribe(channel string) (<-chan *redis.Message, error)
+	}
 
-// New Redis interface with config
-func New(config Config) IRedis {
+	client struct {
+		client *redis.Client
+	}
+
+	Message = redis.Message
+
+	Config struct {
+		Address  string
+		Username string
+		Password string
+		DB       int
+	}
+)
+
+func NewClient(config Config) (Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
-	rdb := goredis.NewClient(&goredis.Options{
+	rdb := redis.NewClient(&redis.Options{
 		Addr:     config.Address,
+		Username: config.Username,
 		Password: config.Password,
-		DB:       config.Database,
+		DB:       config.DB,
 	})
 
-	pong, err := rdb.Ping(ctx).Result()
+	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
-		log.Fatal(pong, err)
-		return nil
+		return nil, err
 	}
 
-	return &redis{
-		cmd: rdb,
-	}
+	log.Println("Connect to redis successfully.")
+
+	return &client{
+		client: rdb,
+	}, nil
 }
 
-func (r *redis) IsConnected() bool {
+func (r *client) IsConnected() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
-	if r.cmd == nil {
+	if r.client == nil {
 		return false
 	}
 
-	_, err := r.cmd.Ping(ctx).Result()
-	if err != nil {
-		log.Println("Redis connection error")
-		return false
-	}
-	return true
+	pong, err := r.client.Ping(ctx).Result()
+	log.Fatal(pong, err)
+	return err == nil
 }
 
-func (r *redis) Get(key string, value interface{}) error {
+func (r *client) Publish(channel string, message interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
-	strValue, err := r.cmd.Get(ctx, key).Result()
+	return r.client.Publish(ctx, channel, message).Err()
+}
+
+func (r *client) Subscribe(channel string) (<-chan *redis.Message, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
+	defer cancel()
+
+	pubsub := r.client.Subscribe(ctx, channel)
+	_, err := pubsub.Receive(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return pubsub.Channel(), nil
+}
+
+func (r *client) Get(key string, value interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
+	defer cancel()
+
+	strValue, err := r.client.Get(ctx, key).Result()
 	if err != nil {
 		return err
 	}
@@ -92,12 +113,12 @@ func (r *redis) Get(key string, value interface{}) error {
 	return nil
 }
 
-func (r *redis) SetWithExpiration(key string, value interface{}, expiration time.Duration) error {
+func (r *client) Set(key string, value interface{}) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
 	bData, _ := json.Marshal(value)
-	err := r.cmd.Set(ctx, key, bData, expiration).Err()
+	err := r.client.Set(ctx, key, bData, 0).Err()
 	if err != nil {
 		return err
 	}
@@ -105,12 +126,12 @@ func (r *redis) SetWithExpiration(key string, value interface{}, expiration time
 	return nil
 }
 
-func (r *redis) Set(key string, value interface{}) error {
+func (r *client) SetWithExpiration(key string, value interface{}, expiration time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
 	bData, _ := json.Marshal(value)
-	err := r.cmd.Set(ctx, key, bData, 0).Err()
+	err := r.client.Set(ctx, key, bData, expiration).Err()
 	if err != nil {
 		return err
 	}
@@ -118,11 +139,11 @@ func (r *redis) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (r *redis) Remove(keys ...string) error {
+func (r *client) Remove(keys ...string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
-	err := r.cmd.Del(ctx, keys...).Err()
+	err := r.client.Del(ctx, keys...).Err()
 	if err != nil {
 		return err
 	}
@@ -130,11 +151,11 @@ func (r *redis) Remove(keys ...string) error {
 	return nil
 }
 
-func (r *redis) Keys(pattern string) ([]string, error) {
+func (r *client) Keys(pattern string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
-	keys, err := r.cmd.Keys(ctx, pattern).Result()
+	keys, err := r.client.Keys(ctx, pattern).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +163,7 @@ func (r *redis) Keys(pattern string) ([]string, error) {
 	return keys, nil
 }
 
-func (r *redis) RemovePattern(pattern string) error {
+func (r *client) RemovePattern(pattern string) error {
 	keys, err := r.Keys(pattern)
 	if err != nil {
 		return err
