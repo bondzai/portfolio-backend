@@ -16,6 +16,8 @@ import (
 
 var cfg = config.LoadConfig()
 
+const kafkaDefaultTopic = "uzhfeczb-default"
+
 func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -28,7 +30,7 @@ func main() {
 	mongoRepo := initMongoDB()
 	kafkaClient := initKafka()
 
-	kafkaClient.Publish("myTopic", "test...")
+	kafkaClient.Publish(kafkaDefaultTopic, "test...")
 
 	certService := usecases.NewCertService(mongoRepo)
 	projectService := usecases.NewProjectService(mongoRepo)
@@ -75,9 +77,9 @@ func initMongoDB() repositories.MongoDBClient {
 
 func initRedis() repositories.RedisClient {
 	redisClient := repositories.NewRedisClient(
-		"127.0.0.1:6379",
-		"",
-		0,
+		cfg.RedisUrl,
+		cfg.RedisPass,
+		cfg.RedisDb,
 	)
 
 	return redisClient
@@ -85,16 +87,11 @@ func initRedis() repositories.RedisClient {
 
 func initKafka() kafka.Client {
 	kafkaClient, err := kafka.NewClient(kafka.Config{
-		Brokers: []string{"localhost:9092"},
-		// For Cloud Karafka, use the following configuration
-		// Brokers:  []string{
-		// 	"broker1.cloudkarafka.com:9094",
-		// 	"broker2.cloudkarafka.com:9094",
-		// 	"broker3.cloudkarafka.com:9094",
-		// },
-		// Username: "your_sasl_username",
-		// Password: "your_sasl_password",
-		// UseTLS:   true,
+		Brokers:          cfg.KafkaBroker,
+		Username:         cfg.KafkaUser,
+		Password:         cfg.KafkaPass,
+		Mechanism:        "SCRAM-SHA-512",
+		SecurityProtocol: "SASL_SSL",
 	})
 	if err != nil {
 		log.Fatalf("Failed to setup Kafka client %v", err)
