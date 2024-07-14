@@ -7,7 +7,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-type config struct {
+var AppConfig = LoadConfig()
+
+type Config struct {
 	Port        string
 	CorsHeader  string
 	CorsMethod  string
@@ -25,21 +27,22 @@ type config struct {
 	KafkaBroker string
 	KafkaUser   string
 	KafkaPass   string
+	KafKaTopic  string
 }
 
 var once sync.Once
 
-func LoadConfig() *config {
+func LoadConfig() *Config {
 	once.Do(func() {
 		viper.SetConfigFile(".env")
 		viper.AutomaticEnv()
 
 		if err := viper.ReadInConfig(); err != nil {
-			log.Printf("Error reading config file, %s", err)
+			log.Printf("Error reading Config file, %s", err)
 		}
 	})
 
-	return &config{
+	return &Config{
 		Port:        viper.GetString("PORT"),
 		CorsHeader:  viper.GetString("CORS_HEADERS"),
 		CorsMethod:  viper.GetString("CORS_METHOD"),
@@ -57,5 +60,6 @@ func LoadConfig() *config {
 		KafkaBroker: viper.GetString("KAFKA_BROKER"),
 		KafkaUser:   viper.GetString("KAFKA_USER"),
 		KafkaPass:   viper.GetString("KAFKA_PASS"),
+		KafKaTopic:  "uzhfeczb-default",
 	}
 }
