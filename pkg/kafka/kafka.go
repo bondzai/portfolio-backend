@@ -1,36 +1,48 @@
 package kafka
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"time"
 
-	"github.com/IBM/sarama"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 const (
-	Timeout = 1
+	OffsetFromLatest   = iota // Start from the latest offset processed
+	OffsetFromEarliest        // Start from the beginning (oldest) offset
+	Timeout            = 1
 )
 
 type (
 	Client interface {
 		IsConnected() bool
 		Publish(topic string, message interface{}) error
-		Subscribe(topics []string) (<-chan *sarama.ConsumerMessage, error)
+		Subscribe(topics []string, offsetOption int, consumerGroup string) (<-chan *Message, error)
+		Close() error
 	}
 
 	client struct {
-		producer sarama.SyncProducer
-		consumer sarama.Consumer
-		brokers  []string
+		producer *kafka.Producer
+		consumer *kafka.Consumer
+		brokers  string
+	}
+
+	Message struct {
+		Topic     string
+		Partition int32
+		Offset    int64
+		Key       []byte
+		Value     []byte
+		Timestamp time.Time
 	}
 
 	Config struct {
-		Brokers  []string
-		Username string
-		Password string
-		UseTLS   bool
+		Brokers          string
+		Username         string
+		Password         string
+		Mechanism        string
+		SecurityProtocol string
 	}
 )
 
@@ -40,57 +52,61 @@ func NewClient(config Config) (Client, error) {
 		return nil, err
 	}
 
-	consumer, err := newConsumer(config)
-	if err != nil {
-		return nil, err
-	}
-
 	log.Println("Connected to Kafka successfully.")
 
 	return &client{
 		producer: producer,
-		consumer: consumer,
 		brokers:  config.Brokers,
 	}, nil
 }
 
-func newProducer(config Config) (sarama.SyncProducer, error) {
-	kafkaConfig := sarama.NewConfig()
-	kafkaConfig.Producer.Return.Successes = true
+func newProducer(config Config) (*kafka.Producer, error) {
+	kafkaConfig := &kafka.ConfigMap{
+		"bootstrap.servers": config.Brokers,
+	}
 
 	if config.Username != "" && config.Password != "" {
-		kafkaConfig.Net.SASL.Enable = true
-		kafkaConfig.Net.SASL.User = config.Username
-		kafkaConfig.Net.SASL.Password = config.Password
-		kafkaConfig.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+		kafkaConfig.SetKey("sasl.username", config.Username)
+		kafkaConfig.SetKey("sasl.password", config.Password)
+		kafkaConfig.SetKey("sasl.mechanisms", config.Mechanism)
 	}
 
-	if config.UseTLS {
-		kafkaConfig.Net.TLS.Enable = true
+	if config.SecurityProtocol != "" {
+		kafkaConfig.SetKey("security.protocol", config.SecurityProtocol)
 	}
 
-	producer, err := sarama.NewSyncProducer(config.Brokers, kafkaConfig)
+	producer, err := kafka.NewProducer(kafkaConfig)
 	if err != nil {
 		return nil, err
 	}
 	return producer, nil
 }
 
-func newConsumer(config Config) (sarama.Consumer, error) {
-	kafkaConfig := sarama.NewConfig()
+func newConsumer(config Config, group string, offsetOption int) (*kafka.Consumer, error) {
+	kafkaConfig := &kafka.ConfigMap{
+		"bootstrap.servers": config.Brokers,
+		"group.id":          group,
+		"auto.offset.reset": "earliest",
+	}
 
 	if config.Username != "" && config.Password != "" {
-		kafkaConfig.Net.SASL.Enable = true
-		kafkaConfig.Net.SASL.User = config.Username
-		kafkaConfig.Net.SASL.Password = config.Password
-		kafkaConfig.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+		kafkaConfig.SetKey("sasl.username", config.Username)
+		kafkaConfig.SetKey("sasl.password", config.Password)
+		kafkaConfig.SetKey("sasl.mechanisms", config.Mechanism)
 	}
 
-	if config.UseTLS {
-		kafkaConfig.Net.TLS.Enable = true
+	if config.SecurityProtocol != "" {
+		kafkaConfig.SetKey("security.protocol", config.SecurityProtocol)
 	}
 
-	consumer, err := sarama.NewConsumer(config.Brokers, kafkaConfig)
+	switch offsetOption {
+	case OffsetFromLatest:
+		kafkaConfig.SetKey("auto.offset.reset", "latest")
+	case OffsetFromEarliest:
+		kafkaConfig.SetKey("auto.offset.reset", "earliest")
+	}
+
+	consumer, err := kafka.NewConsumer(kafkaConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -98,52 +114,60 @@ func newConsumer(config Config) (sarama.Consumer, error) {
 }
 
 func (r *client) IsConnected() bool {
-	if r.producer == nil || r.consumer == nil {
-		return false
-	}
-	return true
+	return r.producer != nil
 }
 
 func (r *client) Publish(topic string, message interface{}) error {
-	_, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
-	defer cancel()
-
 	bData, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
-	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Value: sarama.ByteEncoder(bData),
+	msg := &kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		Value:          bData,
 	}
 
-	_, _, err = r.producer.SendMessage(msg)
-	return err
+	return r.producer.Produce(msg, nil)
 }
 
-func (r *client) Subscribe(topics []string) (<-chan *sarama.ConsumerMessage, error) {
-	messages := make(chan *sarama.ConsumerMessage)
-
-	for _, topic := range topics {
-		partitions, err := r.consumer.Partitions(topic)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, partition := range partitions {
-			pc, err := r.consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
-			if err != nil {
-				return nil, err
-			}
-
-			go func(pc sarama.PartitionConsumer) {
-				for message := range pc.Messages() {
-					messages <- message
-				}
-			}(pc)
-		}
+func (r *client) Subscribe(topics []string, offsetOption int, consumerGroup string) (<-chan *Message, error) {
+	messages := make(chan *Message)
+	consumer, err := newConsumer(Config{Brokers: r.brokers}, consumerGroup, offsetOption)
+	if err != nil {
+		return nil, err
 	}
 
+	go func() {
+		for {
+			ev := consumer.Poll(100)
+			switch e := ev.(type) {
+			case *kafka.Message:
+				messages <- &Message{
+					Topic:     *e.TopicPartition.Topic,
+					Partition: e.TopicPartition.Partition,
+					Offset:    int64(e.TopicPartition.Offset),
+					Key:       e.Key,
+					Value:     e.Value,
+					Timestamp: e.Timestamp,
+				}
+			case kafka.Error:
+				log.Printf("Error: %v\n", e)
+			}
+		}
+	}()
+
+	r.consumer = consumer
+
 	return messages, nil
+}
+
+func (r *client) Close() error {
+	if r.producer != nil {
+		r.producer.Close()
+	}
+	if r.consumer != nil {
+		r.consumer.Close()
+	}
+	return nil
 }
