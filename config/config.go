@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-var AppConfig = LoadConfig()
+var Env = LoadConfig()
 
-type Config struct {
+type config struct {
 	Port        string
 	CorsHeader  string
 	CorsMethod  string
@@ -30,9 +30,9 @@ type Config struct {
 	KafKaTopic  string
 }
 
-var once sync.Once
+func LoadConfig() *config {
+	var once sync.Once
 
-func LoadConfig() *Config {
 	once.Do(func() {
 		viper.SetConfigFile(".env")
 		viper.AutomaticEnv()
@@ -42,7 +42,7 @@ func LoadConfig() *Config {
 		}
 	})
 
-	return &Config{
+	return &config{
 		Port:        viper.GetString("PORT"),
 		CorsHeader:  viper.GetString("CORS_HEADERS"),
 		CorsMethod:  viper.GetString("CORS_METHOD"),

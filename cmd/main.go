@@ -18,8 +18,8 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: false,
-		AllowOrigins:     config.AppConfig.CorsOrigin,
-		AllowHeaders:     config.AppConfig.CorsHeader,
+		AllowOrigins:     config.Env.CorsOrigin,
+		AllowHeaders:     config.Env.CorsHeader,
 		ExposeHeaders:    "Content-Length",
 	}))
 
@@ -53,15 +53,15 @@ func main() {
 
 	websocketService.StartCronJob()
 
-	if err := app.Listen(":" + config.AppConfig.Port); err != nil {
+	if err := app.Listen(":" + config.Env.Port); err != nil {
 		log.Fatalf("Failed to set server %v", err)
 	}
 }
 
 func initMongoDB() repositories.MongoDBClient {
 	mongoClient, err := repositories.NewMongoDBClient(
-		config.AppConfig.MongoUrl,
-		config.AppConfig.MongoDB,
+		config.Env.MongoUrl,
+		config.Env.MongoDB,
 	)
 
 	if err != nil {
@@ -73,9 +73,9 @@ func initMongoDB() repositories.MongoDBClient {
 
 func initRedis() repositories.RedisClient {
 	redisClient := repositories.NewRedisClient(
-		config.AppConfig.RedisUrl,
-		config.AppConfig.RedisPass,
-		config.AppConfig.RedisDb,
+		config.Env.RedisUrl,
+		config.Env.RedisPass,
+		config.Env.RedisDb,
 	)
 
 	return redisClient
@@ -83,9 +83,9 @@ func initRedis() repositories.RedisClient {
 
 func initKafka() kafka.Client {
 	kafkaClient, err := kafka.NewClient(kafka.Config{
-		Brokers:          config.AppConfig.KafkaBroker,
-		Username:         config.AppConfig.KafkaUser,
-		Password:         config.AppConfig.KafkaPass,
+		Brokers:          config.Env.KafkaBroker,
+		Username:         config.Env.KafkaUser,
+		Password:         config.Env.KafkaPass,
 		Mechanism:        "SCRAM-SHA-512",
 		SecurityProtocol: "SASL_SSL",
 	})

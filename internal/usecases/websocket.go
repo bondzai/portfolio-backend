@@ -38,7 +38,7 @@ func (u *WsService) AddConnection(c *websocket.Conn) {
 	u.activeUsers = len(u.connections)
 	u.updateUserCount()
 
-	u.kafkaRepo.Publish(config.AppConfig.KafKaTopic, u.totalUsers)
+	u.kafkaRepo.Publish(config.Env.KafKaTopic, u.totalUsers)
 }
 
 func (u *WsService) RemoveConnection(c *websocket.Conn) {
