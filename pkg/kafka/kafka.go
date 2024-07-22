@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	OffsetFromLatest   = iota // Start from the latest offset processed
-	OffsetFromEarliest        // Start from the beginning (oldest) offset
-	Timeout            = 1
+	OffsetFromLatest = iota
+	OffsetFromEarliest
+	Timeout = 1
 )
 
 type (
@@ -79,6 +79,7 @@ func newProducer(config Config) (*kafka.Producer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return producer, nil
 }
 
@@ -110,6 +111,7 @@ func newConsumer(config Config, group string, offsetOption int) (*kafka.Consumer
 	if err != nil {
 		return nil, err
 	}
+
 	return consumer, nil
 }
 
@@ -166,8 +168,10 @@ func (r *client) Close() error {
 	if r.producer != nil {
 		r.producer.Close()
 	}
+
 	if r.consumer != nil {
 		r.consumer.Close()
 	}
+
 	return nil
 }
