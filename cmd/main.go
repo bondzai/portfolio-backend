@@ -15,14 +15,6 @@ import (
 )
 
 func main() {
-	app := fiber.New()
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: false,
-		AllowOrigins:     config.AppConfig.CorsOrigin,
-		AllowHeaders:     config.AppConfig.CorsHeader,
-		ExposeHeaders:    "Content-Length",
-	}))
-
 	kafkaClient := initKafka()
 	mongoClient := initMongoDB()
 
@@ -33,6 +25,7 @@ func main() {
 	skillService := usecases.NewSkillService(mongoClient)
 	wakaService := usecases.NewStatService()
 	websocketService := usecases.NewWsService(mongoClient, kafkaRepository)
+	websocketService.StartCronJob()
 
 	restHandler := handlers.NewHttpHandler(
 		certService,
@@ -43,6 +36,14 @@ func main() {
 
 	websocketHandler := handlers.NewWsHandler(websocketService)
 
+	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: false,
+		AllowOrigins:     config.AppConfig.CorsOrigin,
+		AllowHeaders:     config.AppConfig.CorsHeader,
+		ExposeHeaders:    "Content-Length",
+	}))
+
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)
 	app.Get("/projects", restHandler.GetProjects)
@@ -50,8 +51,6 @@ func main() {
 	app.Get("/wakatime", restHandler.GetWakaStats)
 
 	app.Get("/ws", websocket.New(websocketHandler.HandleConnection))
-
-	websocketService.StartCronJob()
 
 	if err := app.Listen(":" + config.AppConfig.Port); err != nil {
 		log.Fatalf("Failed to set server %v", err)
