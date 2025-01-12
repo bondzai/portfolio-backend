@@ -5,12 +5,11 @@ import (
 
 	"github.com/bondzai/portfolio-backend/config"
 	"github.com/bondzai/portfolio-backend/internal/handlers"
+	"github.com/bondzai/portfolio-backend/internal/infrastructures"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/usecases"
 	"github.com/bondzai/portfolio-backend/pkg/kafka"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -36,14 +35,7 @@ func main() {
 
 	websocketHandler := handlers.NewWsHandler(websocketService)
 
-	app := fiber.New()
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: false,
-		AllowOrigins:     config.AppConfig.CorsOrigin,
-		AllowHeaders:     config.AppConfig.CorsHeader,
-		ExposeHeaders:    "Content-Length",
-	}))
-
+	app := infrastructures.NewFiber()
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)
 	app.Get("/projects", restHandler.GetProjects)
