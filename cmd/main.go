@@ -36,6 +36,7 @@ func main() {
 	websocketHandler := handlers.NewWsHandler(websocketService)
 
 	app := infrastructures.NewFiber()
+
 	app.Get("/", restHandler.HealthCheck)
 	app.Get("/certifications", restHandler.GetCerts)
 	app.Get("/projects", restHandler.GetProjects)
