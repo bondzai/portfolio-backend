@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bondzai/portfolio-backend/config"
-	"github.com/bondzai/portfolio-backend/internal/domain"
+	"github.com/bondzai/portfolio-backend/internal/models"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/gofiber/websocket/v2"
 	"github.com/robfig/cron/v3"
@@ -88,7 +88,7 @@ func (u *WsService) resetDailyUserCount() {
 
 	u.dbClient.InsertOne(
 		"usage",
-		&domain.TotalUsers{
+		&models.TotalUsers{
 			Time:       time.Now(),
 			TotalUsers: totalUsers,
 		},

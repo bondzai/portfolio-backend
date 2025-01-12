@@ -3,13 +3,13 @@ package usecases
 import (
 	"slices"
 
-	"github.com/bondzai/portfolio-backend/internal/domain"
+	"github.com/bondzai/portfolio-backend/internal/models"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
 type ProjectService interface {
-	ReadProjects() ([]domain.Project, error)
+	ReadProjects() ([]models.Project, error)
 }
 
 type projectService struct {
@@ -22,10 +22,10 @@ func NewProjectService(repo repositories.MongoDBClient) *projectService {
 	}
 }
 
-func (u *projectService) ReadProjects() ([]domain.Project, error) {
+func (u *projectService) ReadProjects() ([]models.Project, error) {
 	data, err := u.repo.ReadProjects()
 	if err != nil {
-		return []domain.Project{}, errs.NewUnExpectedError()
+		return []models.Project{}, errs.NewUnExpectedError()
 	}
 
 	slices.Reverse(data)

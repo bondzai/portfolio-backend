@@ -1,13 +1,13 @@
 package usecases
 
 import (
-	"github.com/bondzai/portfolio-backend/internal/domain"
+	"github.com/bondzai/portfolio-backend/internal/models"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
 type SkillService interface {
-	ReadSkills() ([]domain.Skill, error)
+	ReadSkills() ([]models.Skill, error)
 }
 
 type skillService struct {
@@ -20,10 +20,10 @@ func NewSkillService(repo repositories.MongoDBClient) *skillService {
 	}
 }
 
-func (u *skillService) ReadSkills() ([]domain.Skill, error) {
+func (u *skillService) ReadSkills() ([]models.Skill, error) {
 	data, err := u.repo.ReadSkills()
 	if err != nil {
-		return []domain.Skill{}, errs.NewUnExpectedError()
+		return []models.Skill{}, errs.NewUnExpectedError()
 	}
 
 	return data, nil
