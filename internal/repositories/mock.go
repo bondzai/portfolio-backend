@@ -4,13 +4,21 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/models"
 )
 
-type MockRepository struct{}
+type (
+	MockRepository interface {
+		ReadCerts() ([]models.Certification, error)
+		ReadProjects() ([]models.Project, error)
+		ReadSkills() ([]models.Skill, error)
+	}
 
-func NewMock() *MockRepository {
-	return &MockRepository{}
+	mockRepository struct{}
+)
+
+func NewMock() *mockRepository {
+	return &mockRepository{}
 }
 
-func (mr *MockRepository) ReadCerts() ([]models.Certification, error) {
+func (mr *mockRepository) ReadCerts() ([]models.Certification, error) {
 	certifications := []models.Certification{
 		{
 			Description: "Thin manager",
@@ -71,7 +79,7 @@ func (mr *MockRepository) ReadCerts() ([]models.Certification, error) {
 	return certifications, nil
 }
 
-func (mr *MockRepository) ReadProjects() ([]models.Project, error) {
+func (mr *mockRepository) ReadProjects() ([]models.Project, error) {
 	projects := []models.Project{
 		{
 			HostURL:     "https://introbond-upload.cyclic.app/",
@@ -221,7 +229,7 @@ func (mr *MockRepository) ReadProjects() ([]models.Project, error) {
 	return projects, nil
 }
 
-func (mr *MockRepository) ReadSkills() ([]models.Skill, error) {
+func (mr *mockRepository) ReadSkills() ([]models.Skill, error) {
 	skills := []models.Skill{
 		{
 			ImageURL:  "https://www.vectorlogo.zone/logos/golang/golang-icon.svg",

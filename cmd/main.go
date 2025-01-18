@@ -57,7 +57,7 @@ func initMongoDB() repositories.MongoDBClient {
 	)
 
 	if err != nil {
-		log.Fatalf("Failed to conect to MongoDB %v", err)
+		log.Fatalf("Failed to connect to MongoDB %v", err)
 	}
 
 	return mongoClient
