@@ -6,13 +6,15 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type RedisClient interface {
-}
+type (
+	RedisClient interface {
+	}
 
-type redisClient struct {
-	client *redis.Client
-	ctx    context.Context
-}
+	redisClient struct {
+		client *redis.Client
+		ctx    context.Context
+	}
+)
 
 func NewRedisClient(addr, password string, db int) *redisClient {
 	rdb := redis.NewClient(&redis.Options{

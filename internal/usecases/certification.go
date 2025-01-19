@@ -8,15 +8,17 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
-type CertService interface {
-	ReadCerts() ([]models.Certification, error)
-}
+type (
+	CertService interface {
+		ReadCerts() ([]models.Certification, error)
+	}
 
-type certService struct {
-	repo repositories.MongoDBClient
-}
+	certService struct {
+		repo repositories.MongoDBClient
+	}
+)
 
-func NewCertService(repo repositories.MongoDBClient) *certService {
+func NewCertService(repo repositories.MongoDBClient) CertService {
 	return &certService{
 		repo: repo,
 	}

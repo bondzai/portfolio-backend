@@ -10,18 +10,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type MongoDBClient interface {
-	InsertOne(collectionName string, data *models.TotalUsers) error
-	InsertMany(collectionName string, data []interface{}) error
-	ReadCerts() ([]models.Certification, error)
-	ReadProjects() ([]models.Project, error)
-	ReadSkills() ([]models.Skill, error)
-}
+type (
+	MongoDBClient interface {
+		InsertOne(collectionName string, data *models.TotalUsers) error
+		InsertMany(collectionName string, data []interface{}) error
+		ReadCerts() ([]models.Certification, error)
+		ReadProjects() ([]models.Project, error)
+		ReadSkills() ([]models.Skill, error)
+	}
 
-type mongoDBClient struct {
-	client *mongo.Client
-	db     *mongo.Database
-}
+	mongoDBClient struct {
+		client *mongo.Client
+		db     *mongo.Database
+	}
+)
 
 func NewMongoDBClient(connectionString, dbName string) (*mongoDBClient, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
