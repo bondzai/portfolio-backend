@@ -8,13 +8,15 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
-type ProjectService interface {
-	ReadProjects() ([]models.Project, error)
-}
+type (
+	ProjectService interface {
+		ReadProjects() ([]models.Project, error)
+	}
 
-type projectService struct {
-	repo repositories.MongoDBClient
-}
+	projectService struct {
+		repo repositories.MongoDBClient
+	}
+)
 
 func NewProjectService(repo repositories.MongoDBClient) *projectService {
 	return &projectService{

@@ -7,17 +7,23 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-type WsHandler struct {
-	wsService *usecases.WsService
-}
+type (
+	WsHandler interface {
+		HandleConnection(c *websocket.Conn)
+	}
 
-func NewWsHandler(wsService *usecases.WsService) *WsHandler {
-	return &WsHandler{
+	wsHandler struct {
+		wsService usecases.WsService
+	}
+)
+
+func NewWsHandler(wsService usecases.WsService) WsHandler {
+	return &wsHandler{
 		wsService: wsService,
 	}
 }
 
-func (h *WsHandler) HandleConnection(c *websocket.Conn) {
+func (h *wsHandler) HandleConnection(c *websocket.Conn) {
 	h.wsService.AddConnection(c)
 	defer h.wsService.RemoveConnection(c)
 

@@ -24,7 +24,6 @@ func main() {
 	skillService := usecases.NewSkillService(mongoClient)
 	wakaService := usecases.NewStatService()
 	websocketService := usecases.NewWsService(mongoClient, kafkaRepository)
-	websocketService.StartCronJob()
 
 	restHandler := handlers.NewHttpHandler(
 		certService,

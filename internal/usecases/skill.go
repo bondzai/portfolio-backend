@@ -6,15 +6,17 @@ import (
 	"github.com/bondzai/portfolio-backend/internal/utils/errs"
 )
 
-type SkillService interface {
-	ReadSkills() ([]models.Skill, error)
-}
+type (
+	SkillService interface {
+		ReadSkills() ([]models.Skill, error)
+	}
 
-type skillService struct {
-	repo repositories.MongoDBClient
-}
+	skillService struct {
+		repo repositories.MongoDBClient
+	}
+)
 
-func NewSkillService(repo repositories.MongoDBClient) *skillService {
+func NewSkillService(repo repositories.MongoDBClient) SkillService {
 	return &skillService{
 		repo: repo,
 	}
