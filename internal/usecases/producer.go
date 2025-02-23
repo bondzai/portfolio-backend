@@ -8,13 +8,15 @@ import (
 	"github.com/bondzai/portfolio-backend/pkg/events"
 )
 
-type EventProducer interface {
-	Produce(event events.Event) error
-}
+type (
+	EventProducer interface {
+		Produce(event events.Event) error
+	}
 
-type eventProducer struct {
-	producer sarama.SyncProducer
-}
+	eventProducer struct {
+		producer sarama.SyncProducer
+	}
+)
 
 func NewEventProducer(producer sarama.SyncProducer) EventProducer {
 	return eventProducer{producer}

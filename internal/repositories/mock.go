@@ -1,17 +1,25 @@
 package repositories
 
 import (
-	"github.com/bondzai/portfolio-backend/internal/domain"
+	"github.com/bondzai/portfolio-backend/internal/models"
 )
 
-type MockRepository struct{}
+type (
+	MockRepository interface {
+		ReadCerts() ([]models.Certification, error)
+		ReadProjects() ([]models.Project, error)
+		ReadSkills() ([]models.Skill, error)
+	}
 
-func NewMock() *MockRepository {
-	return &MockRepository{}
+	mockRepository struct{}
+)
+
+func NewMock() *mockRepository {
+	return &mockRepository{}
 }
 
-func (mr *MockRepository) ReadCerts() ([]domain.Certification, error) {
-	certifications := []domain.Certification{
+func (mr *mockRepository) ReadCerts() ([]models.Certification, error) {
+	certifications := []models.Certification{
 		{
 			Description: "Thin manager",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667635443/Portfolio/cirtifications/Cir-Thin.png",
@@ -71,8 +79,8 @@ func (mr *MockRepository) ReadCerts() ([]domain.Certification, error) {
 	return certifications, nil
 }
 
-func (mr *MockRepository) ReadProjects() ([]domain.Project, error) {
-	projects := []domain.Project{
+func (mr *mockRepository) ReadProjects() ([]models.Project, error) {
+	projects := []models.Project{
 		{
 			HostURL:     "https://introbond-upload.cyclic.app/",
 			ImageURL:    "https://res.cloudinary.com/dbdacfhye/image/upload/v1667634064/Portfolio/project-cloudinary.png",
@@ -221,8 +229,8 @@ func (mr *MockRepository) ReadProjects() ([]domain.Project, error) {
 	return projects, nil
 }
 
-func (mr *MockRepository) ReadSkills() ([]domain.Skill, error) {
-	skills := []domain.Skill{
+func (mr *mockRepository) ReadSkills() ([]models.Skill, error) {
+	skills := []models.Skill{
 		{
 			ImageURL:  "https://www.vectorlogo.zone/logos/golang/golang-icon.svg",
 			IsShowing: true,

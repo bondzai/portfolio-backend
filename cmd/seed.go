@@ -3,13 +3,14 @@ package main
 import (
 	"log/slog"
 
+	"github.com/bondzai/portfolio-backend/internal/infrastructures"
 	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/bondzai/portfolio-backend/internal/utils"
 )
 
 func RunSeed() {
 	mockRepo := repositories.NewMock()
-	mongoRepo := initMongoDB()
+	mongoRepo := infrastructures.NewMongo()
 
 	var err error
 

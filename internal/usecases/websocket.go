@@ -4,32 +4,34 @@ import (
 	"encoding/json"
 	"log"
 	"sync"
-	"time"
 
-	"github.com/bondzai/portfolio-backend/config"
-	"github.com/bondzai/portfolio-backend/internal/domain"
-	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/gofiber/websocket/v2"
-	"github.com/robfig/cron/v3"
 )
 
-type WsService struct {
-	connections []*websocket.Conn
-	activeUsers int
-	totalUsers  int
-	mutex       sync.Mutex
-	dbClient    repositories.MongoDBClient
-	kafkaRepo   repositories.KafkaRepository
+type usageCount struct {
+	ActiveUsers int `json:"activeUsers"`
+	TotalUsers  int `json:"totalUsers"`
 }
 
-func NewWsService(dbClient repositories.MongoDBClient, kafkaRepo repositories.KafkaRepository) *WsService {
-	return &WsService{
-		dbClient:  dbClient,
-		kafkaRepo: kafkaRepo,
+type (
+	WsService interface {
+		AddConnection(c *websocket.Conn)
+		RemoveConnection(c *websocket.Conn)
 	}
+
+	wsService struct {
+		connections []*websocket.Conn
+		activeUsers int
+		totalUsers  int
+		mutex       sync.Mutex
+	}
+)
+
+func NewWsService() WsService {
+	return &wsService{}
 }
 
-func (u *WsService) AddConnection(c *websocket.Conn) {
+func (u *wsService) AddConnection(c *websocket.Conn) {
 	u.mutex.Lock()
 	defer u.mutex.Unlock()
 
@@ -38,10 +40,9 @@ func (u *WsService) AddConnection(c *websocket.Conn) {
 	u.activeUsers = len(u.connections)
 	u.updateUserCount()
 
-	u.kafkaRepo.Publish(config.AppConfig.KafKaTopic, u.totalUsers)
 }
 
-func (u *WsService) RemoveConnection(c *websocket.Conn) {
+func (u *wsService) RemoveConnection(c *websocket.Conn) {
 	u.mutex.Lock()
 	defer u.mutex.Unlock()
 
@@ -55,12 +56,7 @@ func (u *WsService) RemoveConnection(c *websocket.Conn) {
 	u.updateUserCount()
 }
 
-type usageCount struct {
-	ActiveUsers int `json:"activeUsers"`
-	TotalUsers  int `json:"totalUsers"`
-}
-
-func (u *WsService) updateUserCount() {
+func (u *wsService) updateUserCount() {
 	data := usageCount{
 		ActiveUsers: u.activeUsers,
 		TotalUsers:  u.totalUsers,
@@ -77,33 +73,4 @@ func (u *WsService) updateUserCount() {
 			log.Println("Error writing message:", err)
 		}
 	}
-}
-
-func (u *WsService) resetDailyUserCount() {
-	u.mutex.Lock()
-	defer u.mutex.Unlock()
-
-	totalUsers := u.totalUsers
-	u.totalUsers = 0
-
-	u.dbClient.InsertOne(
-		"usage",
-		&domain.TotalUsers{
-			Time:       time.Now(),
-			TotalUsers: totalUsers,
-		},
-	)
-}
-
-func (u *WsService) StartCronJob() {
-	c := cron.New()
-
-	c.AddFunc("59 23 * * *", func() {
-		u.resetDailyUserCount()
-	})
-
-	c.Start()
-	defer c.Stop()
-
-	log.Println("cron started...")
 }
