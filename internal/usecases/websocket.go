@@ -5,8 +5,6 @@ import (
 	"log"
 	"sync"
 
-	"github.com/bondzai/portfolio-backend/config"
-	"github.com/bondzai/portfolio-backend/internal/repositories"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -26,16 +24,11 @@ type (
 		activeUsers int
 		totalUsers  int
 		mutex       sync.Mutex
-		dbClient    repositories.MongoDBClient
-		kafkaRepo   repositories.KafkaRepository
 	}
 )
 
-func NewWsService(dbClient repositories.MongoDBClient, kafkaRepo repositories.KafkaRepository) WsService {
-	return &wsService{
-		dbClient:  dbClient,
-		kafkaRepo: kafkaRepo,
-	}
+func NewWsService() WsService {
+	return &wsService{}
 }
 
 func (u *wsService) AddConnection(c *websocket.Conn) {
@@ -47,7 +40,6 @@ func (u *wsService) AddConnection(c *websocket.Conn) {
 	u.activeUsers = len(u.connections)
 	u.updateUserCount()
 
-	u.kafkaRepo.Publish(config.AppConfig.KafKaTopic, u.totalUsers)
 }
 
 func (u *wsService) RemoveConnection(c *websocket.Conn) {
